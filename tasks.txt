@@ -4,8 +4,8 @@
 Ж    login.html          Логин
 В    session.html        Создание сессии +  Окончание сессии
 В    session_edit.html   Редактирование сессии
-В    order.html          Создание блюда + Редактирование
-В    history.html        История
+М    order.html          Создание блюда + Редактирование
+М    history.html        История
 С    index.html          Главная страница
 С    credits.html        Долги (Должники, и кому сам должен)
 
@@ -14,15 +14,15 @@
 Ж    login
 Ж    logout
 В    session
-В    order
-В    history
+М    order
+М    history
 С    index
 С    credits
 
 Формы (Flask WTForms)
-М    Login       [nickname, password]
-М    Register    [fullname, nickname, password]
-C     Session     [users] <Multiselect>
-C     SessionEdit [users, orders (delete only), users, maintainers] <Advanced>
+Ж   Login       [nickname, password]
+Ж    Register    [fullname, nickname, password]
+В     Session     [users] <Multiselect>
+В     SessionEdit [users, orders (delete only), users, maintainers] <Advanced>
 М    Order       [session, users] <Multiselect>
-М    Credit      [master, slave, value, new_value] <Погашение>
+С    Credit      [master, slave, value, new_value] <Погашение>
