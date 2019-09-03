@@ -1,0 +1,28 @@
+Шаблоны
+Ж    reg.html            Регистрация
+Ж    reg_virtual.html    Создание виртуального пользователя
+Ж    login.html          Логин
+В    session.html        Создание сессии +  Окончание сессии
+В    session_edit.html   Редактирование сессии
+В    order.html          Создание блюда + Редактирование
+В    history.html        История
+С    index.html          Главная страница
+С    credits.html        Долги (Должники, и кому сам должен)
+
+Руты
+Ж    reg
+Ж    login
+Ж    logout
+В    session
+В    order
+В    history
+С    index
+С    credits
+
+Формы (Flask WTForms)
+М    Login       [nickname, password]
+М    Register    [fullname, nickname, password]
+C     Session     [users] <Multiselect>
+C     SessionEdit [users, orders (delete only), users, maintainers] <Advanced>
+М    Order       [session, users] <Multiselect>
+М    Credit      [master, slave, value, new_value] <Погашение>
