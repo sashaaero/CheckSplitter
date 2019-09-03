@@ -8,12 +8,17 @@ db = Database()
 class User(db.Entity):
     id = PrimaryKey(int, auto=True)
     fullname = Optional(str)
+    password = Required(str)
     nickname = Optional(str)
     sessions = Set('Session')
     orders = Set('OrderedItem')
     mastered_credits = Set('Credit', reverse='master')
     slaved_credits = Set('Credit', reverse='slave')
     session_maintains = Set('SessionMaintain')
+
+    @property
+    def virtual(self):
+        return self.password is None
 
 
 class Session(db.Entity):
@@ -37,6 +42,7 @@ class Credit(db.Entity):
     id = PrimaryKey(int, auto=True)
     master = Required(User, reverse='mastered_credits')
     slave = Required(User, reverse='slaved_credits')
+    value = Optional(int)
 
 
 class SessionMaintain(db.Entity):
