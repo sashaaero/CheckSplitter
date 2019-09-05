@@ -39,3 +39,10 @@ def login():
         login_user(user)
         return redirect(url_for('index'))
     return render_template('login.html', form=form)
+	
+	
+@app.route('/logout', methods=['POST', 'GET'])
+@login_required()
+def logout:
+	logout_user()
+	return redirect(url_for('index')) 
