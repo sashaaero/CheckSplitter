@@ -13,8 +13,3 @@ login_manager = LoginManager(app)
 @login_manager.user_loader
 def load_user(user_id):
     return db.User.get(user_id)
-
-
-if __name__ == '__main__':
-    db.generate_mapping(create_tables=True)
-    app.run()

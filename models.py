@@ -20,6 +20,9 @@ class User(db.Entity):
     def virtual(self):
         return self.password is None
 
+    def is_authenticated(self):
+        return True
+
 
 class Session(db.Entity):
     id = PrimaryKey(int, auto=True)
