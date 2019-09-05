@@ -27,3 +27,15 @@ def reg:
         return redirect(url_for('nickname'))
     return render_template('reg.html', form=form)
 	
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User.get(nickname=form.data['nickname'])
+        pwd = form.data['pwd']
+        if user.pwd != pwd:
+            return 'Incorrect password'
+        login_user(user)
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form)
