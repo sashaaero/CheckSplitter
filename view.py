@@ -17,3 +17,13 @@ def order_new():
 @app.route('/', methods=["POST", "GET"] )
 def index():
     return render_template('base.html', title='Base template')
+
+
+@app.route('/reg', methods=['POST', 'GET'])
+def reg:
+	form = RegForm(request.form)
+    if request.method == 'POST' and form.validate():
+        User(nickname=form.data['nickname'], fullname=form.data['fullname'], pwd=form.data['pwd1'])
+        return redirect(url_for('nickname'))
+    return render_template('reg.html', form=form)
+	
