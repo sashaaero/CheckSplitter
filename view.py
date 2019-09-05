@@ -20,7 +20,7 @@ def index():
 
 
 @app.route('/reg', methods=['POST', 'GET'])
-def reg:
+def reg():
 	form = RegForm(request.form)
     if request.method == 'POST' and form.validate():
         User(nickname=form.data['nickname'], fullname=form.data['fullname'], pwd=form.data['pwd1'])
@@ -43,6 +43,6 @@ def login():
 	
 @app.route('/logout', methods=['POST', 'GET'])
 @login_required()
-def logout:
+def logout():
 	logout_user()
 	return redirect(url_for('index')) 
