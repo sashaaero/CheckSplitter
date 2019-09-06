@@ -7,16 +7,9 @@ from flask import render_template, request, flash, redirect, url_for
 from datetime import datetime
 
 
-@app.route('/session/order/new', methods=["POST", "GET"])
-def order_new():
-    user = current_user
-    form = OrderItem(request.form)
-    sessions_ = request.form['session']
-
-
 @app.route('/', methods=["POST", "GET"])
 def index():
-    return render_template('base.html', title='Base template')
+    return render_template('index.html', title='Главная')
 
 
 @app.route('/reg', methods=['POST', 'GET'])
@@ -46,3 +39,9 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/session/order/new', methods=["POST", "GET"])
+def order_new():
+    user = current_user
+    form = OrderItem(request.form)
+    sessions_ = request.form['session']
