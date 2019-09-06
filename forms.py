@@ -5,8 +5,8 @@ from models import *
 
 def nickname_free(form, field):
 	nickname = field.data
-	chek = User.get(nickname=nickname)
-	if chek is not None:
+	check = User.get(nickname=nickname)
+	if check is not None:
 		raise ValidationError('Nickname %r is already taken' % nickname)
 	
 	
@@ -51,6 +51,6 @@ class LoginForm(Form):
 
 	
 class OrderItem(Form):
-    title = StringField('Название блюда', [InputRequired()])
-    price = StringField('Цена', [InputRequired()])
-    users = StringField('Кто заказад', [InputRequired()])
+	title = StringField('Название блюда', [InputRequired()])
+	price = StringField('Цена', [InputRequired()])
+	users = StringField('Кто заказал', [InputRequired()])
