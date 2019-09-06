@@ -1,8 +1,9 @@
 from datetime import datetime
 from pony.orm import *
+from config import settings
 
 
-db = Database()
+db = Database(**settings['db_params'])
 
 
 class User(db.Entity):
@@ -54,5 +55,3 @@ class SessionMaintain(db.Entity):
     value = Required(int)
     session = Required(Session)
 
-
-db.bind('sqlite', 'db.sqlite', create_db=True)
