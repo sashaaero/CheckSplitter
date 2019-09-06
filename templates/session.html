@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Создание сессии</h1>
+    <form method="post" id="create_session">
+        <div class="form-group">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <label for="usersInput">Пользователи:</label>
+        </div>
+        <div id="user_selectors" class="form-group">
+            <label>Участники</label>
+            <div class="user-selector d-flex">
+                <select class="select-group custom-select mb-2" data-index="0" name="user[]">
+                    <option selected>Пользователь</option>
+                    {% for user in users %}
+                    <option value={{ user.id }}> {{ user.nickname }}</option>
+                    {% endfor %}
+                </select>
+                <i class="material-icons mt-2 ml-2 delete-user" style="color: red; cursor: pointer;">
+                    clear
+                </i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="datetimeInput">Дата и время начала сессии</label>
+            <input type="datetime" name="datetimeInput" class="form-control" placeholder="{{ current_dt }}">
+        </div>
+        <button type="submit" name="create" class="btn btn-primary">Создать сессию</button>
+    </form>
+{% endblock %}
+{% block custom_script %}
+    <script type="application/javascript">
+        $("body").on("change", "select.select-group", (el) => {
+            let element = $(el.target);
+            let index = parseInt(element.attr("data-index")) + 1;
+            if ($("select.user-selector[data-index=" + index + "]").length === 0) {
+                let new_el = element.parent().clone();
+                new_el.find("select").attr("data-index", index);
+                $("#user_selectors").append(new_el);
+            }
+        });
+
+        $("body").on("click", "i.delete-user", (el) => {
+            let element = $(el.target);
+            element.parent("div.user-selector")[0].remove();
+        });
+    </script>
+{% endblock %}
