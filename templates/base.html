@@ -24,6 +24,9 @@
                     <a class="nav-link" href="#">Войти</a>
                   </li>
                   {% endif %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('session') }}">Создать сессию</a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -47,5 +50,7 @@
         <!-- Bootstrap core JavaScript -->
         <script src="{{ url_for('static', filename='jquery/jquery.slim.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+        {% block custom_script %}
+        {% endblock %}
     </body>
 </html>
