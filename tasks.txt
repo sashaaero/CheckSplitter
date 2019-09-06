@@ -22,7 +22,5 @@
 Формы (Flask WTForms)
 Ж   Login       [nickname, password]
 Ж    Register    [fullname, nickname, password]
-В     Session     [users] <Multiselect>
 В     SessionEdit [users, orders (delete only), users, maintainers] <Advanced>
-М    Order       [session, users] <Multiselect>
 С    Credit      [master, slave, value, new_value] <Погашение>
