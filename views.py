@@ -14,19 +14,19 @@ def order_new():
     sessions_ = request.form['session']
 
 
-@app.route('/', methods=["POST", "GET"] )
+@app.route('/', methods=["POST", "GET"])
 def index():
     return render_template('base.html', title='Base template')
 
 
 @app.route('/reg', methods=['POST', 'GET'])
 def reg():
-	form = RegForm(request.form)
+    form = RegForm(request.form)
     if request.method == 'POST' and form.validate():
         User(nickname=form.data['nickname'], fullname=form.data['fullname'], pwd=form.data['pwd1'])
         return redirect(url_for('nickname'))
     return render_template('reg.html', form=form)
-	
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -39,10 +39,10 @@ def login():
         login_user(user)
         return redirect(url_for('index'))
     return render_template('login.html', form=form)
-	
-	
+
+
 @app.route('/logout', methods=['POST', 'GET'])
-@login_required()
+@login_required
 def logout():
-	logout_user()
-	return redirect(url_for('index')) 
+    logout_user()
+    return redirect(url_for('index'))
