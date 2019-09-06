@@ -1,0 +1,30 @@
+{% macro render_field2(field) %}
+  <dt>{{ field.label }}
+  <dd>{{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
+
+{% macro render_field(field) %}
+<div class="form-group row">
+  <!--div class="col-sm-6"-->
+      {{ field(class='form-control',
+        placeholder=field.label.text,
+        oninvalid="this.setCustomValidity('Тут надо ввести данне')",
+        oninput="setCustomValidity('')")|safe }}
+    <!--/div>
+  <div class="col-sm-4"-->
+      {% if field.errors %}
+          {% for error in field.errors %}
+              <small class="text-danger">{{ error }}</small>
+          {% endfor %}
+      {% endif %}
+  <!--/div-->
+</div>
+{% endmacro %}
