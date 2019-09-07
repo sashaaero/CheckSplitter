@@ -84,3 +84,12 @@ def order_new():
     user = current_user
     form = OrderItem(request.form)
     sessions_ = request.form['session']
+
+
+@app.route('/credit', methods=['POST','GET'])
+#@login_required
+def check_credit():
+    user = current_user
+    masters = ['a', 'b', 'c']
+    slaves = ['d', 'e', 'f']
+    return render_template('credit.html', user=user, masters=masters, slaves=slaves)
