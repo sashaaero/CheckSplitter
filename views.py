@@ -87,9 +87,15 @@ def order_new():
 
 
 @app.route('/credit', methods=['POST','GET'])
-#@login_required
+# @login_required
 def check_credit():
     user = current_user
-    masters = ['a', 'b', 'c']
-    slaves = ['d', 'e', 'f']
+    masters = [["Санёк", 500], ["Ванёк", 400], ["Макс", 800]]
+    slaves = [["Паша", 350], ["Игорь", 750], ["Жека", 600]]
     return render_template('credit.html', user=user, masters=masters, slaves=slaves)
+
+
+@app.route('/credit/edit', methods=['POST','GET'])
+# @login_required
+def edit_debt():
+    return render_template('edit_debt.html')
