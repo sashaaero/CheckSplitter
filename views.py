@@ -55,8 +55,8 @@ def session():
 def reg():
     form = RegForm(request.form)
     if request.method == 'POST' and form.validate():
-        User(nickname=form.data['nickname'], fullname=form.data['fullname'], pwd=form.data['pwd1'])
-        return redirect(url_for('nickname'))
+        User(nickname=form.data['nickname'], fullname=form.data['fullname'], password=form.data['pwd1'])
+        return redirect(url_for('index'))
     return render_template('reg.html', form=form)
 
 
