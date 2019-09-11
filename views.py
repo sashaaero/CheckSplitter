@@ -1,7 +1,7 @@
 from app import app
 from flask_login import login_user, current_user, logout_user, login_required
-from models import db
-from forms import *
+from models import *
+from forms import RegForm, LoginForm, OrderItem
 from pony.orm import select, commit, flush, desc, sql_debug
 from flask import render_template, request, flash, redirect, url_for
 from datetime import datetime
@@ -13,6 +13,7 @@ def authorized():
     if callable(auth):
         return auth()
     return auth
+
 
 @app.route('/', methods=["POST", "GET"])
 @login_required
@@ -70,7 +71,7 @@ def login():
             return 'Incorrect password'
         login_user(user)
         return redirect(url_for('index'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, title='Вход')
 
 
 @app.route('/logout', methods=['POST', 'GET'])
@@ -78,6 +79,7 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 
 @app.route('/session/order/new', methods=["POST", "GET"])
 def order_new():
