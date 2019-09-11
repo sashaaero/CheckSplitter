@@ -1,32 +1,23 @@
-<html>
-<head>
-    <title>Registration</title>
-<link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-<link href="{{ url_for('static', filename='styles.css')}}" rel="stylesheet"/>
-</head>
-<!------ Include the above in your HEAD tag ---------->
+{% extends 'base.html' %}
 
-<body>
-<div class="container">
-    <div class="row centered-form">
+{% block content %}
+<div class="row centered-form">
     <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Registration</h3>
+                <h3 class="panel-title">Регистрация</h3>
                 </div>
                 <div class="panel-body">
                 <form role="form" method="POST">
                     <div class="form-group">
-                        <input type="text" name="nickname" id="login" class="form-control input-sm" placeholder="Nickname">
+                        <input type="text" name="nickname" id="login" class="form-control input-sm" placeholder="Логин">
                         {% if 'nickname' in form.errors %}
                             <small class="text-danger">{{ form.errors['nickname'][0] }}</small>
                         {% endif %}
                     </div>
 
                     <div class="form-group">
-                        <input type="text" name="fullname" id="email" class="form-control input-sm" placeholder="Full Name">
+                        <input type="text" name="fullname" id="fullname" class="form-control input-sm" placeholder="Имя">
                         {% if 'fullname' in form.errors %}
                             <small class="text-danger">{{ form.errors['fullname'][0] }}</small>
                         {% endif %}
@@ -35,7 +26,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
-                                <input type="password" name="pwd1" id="pwd1" class="form-control input-sm" placeholder="Password">
+                                <input type="password" name="pwd1" id="pwd1" class="form-control input-sm" placeholder="Пароль">
                             </div>
                             {% if 'pwd1' in form.errors %}
                                 <small class="text-danger">{{ form.errors['pwd1'][0] }}</small>
@@ -43,7 +34,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
-                                <input type="password" name="pwd2" id="pwd2" class="form-control input-sm" placeholder="Confirm Password">
+                                <input type="password" name="pwd2" id="pwd2" class="form-control input-sm" placeholder="Пароль еще раз">
                             </div>
                         {% if 'pwd2' in form.errors %}
                             <small class="text-danger">{{ form.errors['pwd2'][0] }}</small>
@@ -51,14 +42,12 @@
                         </div>
                     </div>
 
-                    <input type="submit" value="Register" class="btn btn-info btn-block">
+                    <input type="submit" value="Зарегистрироваться" class="btn btn-dark btn-block">
 
                     </form>
-                
+
                 </div>
             </div>
         </div>
     </div>
-</div>
-</body>
-</html>
+{% endblock %}

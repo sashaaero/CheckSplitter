@@ -1,33 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-        <div class="row centered-form">
-        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
-        	<div class="panel panel-default">
-        		<div class="panel-heading">
-			    		<h3 class="panel-title">Login</h3>
-			 			</div>
-			 			<div class="panel-body">
-			    		<form role="form" method="POST">
-                            <div class="form-group">
-                                <input type="text" name="nickname" id="login" class="form-control input-sm" placeholder="Nickname">
-                                {% if 'nickname' in form.errors %}
-                                    <small class="text-danger">{{ form.errors['nickname'][0] }}</small>
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                <input type="password" name="pwd" id="pwd" class="form-control input-sm" placeholder="Password">
-                            </div>
-                            {% if 'pwd' in form.errors %}
-                                <small class="text-danger">{{ form.errors['pwd'][0] }}</small>
-                            {% endif %}
-			    			<input type="submit" value="Login" class="btn btn-info btn-block">
-                             <br>
-			    		</form>
-			    	</div>
-	    		</div>
-    		</div>
-    	</div>
+<div class="row centered-form">
+    <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Вход</h3>
+            </div>
+            <div class="panel-body">
+                <form role="form" method="POST">
+                    <div class="form-group">
+                        <input type="text" name="nickname" id="login" class="form-control input-sm" placeholder="Логин">
+                        {% if 'nickname' in form.errors %}
+                            <small class="text-danger">{{ form.errors['nickname'][0] }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="pwd" id="pwd" class="form-control input-sm" placeholder="Пароль">
+                    </div>
+                    {% if 'pwd' in form.errors %}
+                        <small class="text-danger">{{ form.errors['pwd'][0] }}</small>
+                    {% endif %}
+                    <input type="submit" value="Войти" class="btn btn-dark btn-block">
+                     <br>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}
