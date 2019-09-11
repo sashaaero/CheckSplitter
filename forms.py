@@ -8,8 +8,8 @@ def nickname_free(form, field):
 	check = User.get(nickname=nickname)
 	if check is not None:
 		raise ValidationError('Nickname %r is already taken' % nickname)
-	
-	
+
+
 def len_check(form, field):
 	pwd = field.data
 	if len(pwd) < 5:
@@ -53,4 +53,5 @@ class LoginForm(Form):
 class OrderItem(Form):
 	title = StringField('Название блюда', [InputRequired()])
 	price = StringField('Цена', [InputRequired()])
-	users = StringField('Кто заказал', [InputRequired()])
+	users = StringField('Кто заказал')
+	session = StringField('Ресторан')
