@@ -55,8 +55,8 @@ def session():
 def reg():
     form = RegForm(request.form)
     if request.method == 'POST' and form.validate():
-        User(nickname=form.data['nickname'], fullname=form.data['fullname'], pwd=form.data['pwd1'])
-        return redirect(url_for('nickname'))
+        User(nickname=form.data['nickname'], fullname=form.data['fullname'], password=form.data['pwd1'])
+        return redirect(url_for('index'))
     return render_template('reg.html', form=form)
 
 
@@ -66,7 +66,7 @@ def login():
     if request.method == 'POST' and form.validate():
         user = User.get(nickname=form.data['nickname'])
         pwd = form.data['pwd']
-        if user.pwd != pwd:
+        if user.password != pwd:
             return 'Incorrect password'
         login_user(user)
         return redirect(url_for('index'))
@@ -84,3 +84,18 @@ def order_new():
     user = current_user
     form = OrderItem(request.form)
     sessions_ = request.form['session']
+
+
+@app.route('/credit', methods=['POST','GET'])
+# @login_required
+def check_credit():
+    user = current_user
+    masters = [["Санёк", 500], ["Ванёк", 400], ["Макс", 800]]
+    slaves = [["Паша", 350], ["Игорь", 750], ["Жека", 600]]
+    return render_template('credit.html', user=user, masters=masters, slaves=slaves)
+
+
+@app.route('/credit/edit', methods=['POST','GET'])
+# @login_required
+def edit_debt():
+    return render_template('edit_debt.html')
