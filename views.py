@@ -66,7 +66,7 @@ def login():
     if request.method == 'POST' and form.validate():
         user = User.get(nickname=form.data['nickname'])
         pwd = form.data['pwd']
-        if user.pwd != pwd:
+        if user.password != pwd:
             return 'Incorrect password'
         login_user(user)
         return redirect(url_for('index'))

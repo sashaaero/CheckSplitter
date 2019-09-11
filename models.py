@@ -1,12 +1,13 @@
 from datetime import datetime
 from pony.orm import *
 from config import settings
+from flask_login import UserMixin
 
 
 db = Database(**settings['db_params'])
 
 
-class User(db.Entity):
+class User(db.Entity, UserMixin):
     id = PrimaryKey(int, auto=True)
     fullname = Optional(str)
     password = Required(str)
@@ -16,6 +17,7 @@ class User(db.Entity):
     mastered_credits = Set('Credit', reverse='master')
     slaved_credits = Set('Credit', reverse='slave')
     session_maintains = Set('SessionMaintain')
+
 
     @property
     def virtual(self):
