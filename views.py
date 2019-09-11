@@ -55,9 +55,7 @@ def session():
 def reg():
     form = RegForm(request.form)
     if request.method == 'POST' and form.validate():
-        User(nickname=form.data['nickname'],
-             fullname=form.data['fullname'],
-             pwd=form.data['pwd1'])
+        User(nickname=form.data['nickname'], fullname=form.data['fullname'], pwd=form.data['pwd1'])
         return redirect(url_for('nickname'))
     return render_template('reg.html', form=form)
 
@@ -82,14 +80,7 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/session/order/new', methods=["POST", "GET"])
-def order_new(session):
+def order_new():
+    user = current_user
     form = OrderItem(request.form)
-    if request.metod == 'POST' and form.validate():
-        form.users.choices = select((t.users, t.users) for t in db.Session if t.id == session)[:]
-        db.OrderItem(title=form.data['title'],
-                     price=form.data['price'],
-                     session=session,
-                     users=form.users.choices)
-
-@app.route('/session/order/re', methods=["POST", "GET"])
-def order_re(session):
+    sessions_ = request.form['session']

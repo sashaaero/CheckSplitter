@@ -33,9 +33,10 @@ def nickname_check(form, field):
 def pwd_match_check(form, field):
 	nickname = form.nickname.data
 	pwd = field.data
-	check = User.get(nickname=nickname, pwd=pwd)
-	if check is None:
-		raise ValidationError('Wrong password. Try again')
+	check = User.get(nickname=nickname, password=pwd)
+	user = User.get(nickname=form.data['nickname'])
+	if check is None:	
+		raise ValidationError('Wrong password. Try again. password')
 		
 
 class RegForm(Form):

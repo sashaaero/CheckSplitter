@@ -24,7 +24,7 @@
                   <li class="nav-item active">
                   {% if cuser.is_authenticated %}
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Выход</a>
+                    <a class="nav-link" href="{{ url_for('logout')}}">Выход</a>
                   </li>
                   {% else %}
                   <li class="nav-item">
