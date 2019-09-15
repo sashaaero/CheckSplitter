@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
-Я - страничка
 {% block content %}
-    <div class="container" >
-		<br>
-		<div class="col-xs-12 col-sm-8 col-md-6">
-				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-primary">
-						<a href="{{ url_for('session') }}" class="btn btn-primary" role="button">Создать Сессию</a>
-					</label>
-					<label class="btn btn-primary">
-						<a href="{{ url_for('check_credit') }}" class="btn btn-primary" role="button">Долги</a>
-					</label>
-				</div>
-		</div>
+    <div class="container">
+		<div class="row">
+            <div class="col-md-8">
+                <a href="{{ url_for('session') }}" class="btn btn-dark center-block" role="button">Создать Сессию</a>
+                <a href="{{ url_for('index') }}" class="btn btn-dark center-block" role="button">Текущая сессия</a>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-8">
+                <a href="{{ url_for('check_credit') }}" class="btn btn-dark center-block" role="button">Задолженности</a>
+                <a href="{{ url_for('index') }}" class="btn btn-dark center-block" role="button">История</a>
+            </div>
+        </div>
 	</div>
 {% endblock %}
