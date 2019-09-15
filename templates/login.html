@@ -10,6 +10,7 @@
             <div class="panel-body">
                 <form role="form" method="POST">
                     <div class="form-group">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <input type="text" name="nickname" id="login" class="form-control input-sm" placeholder="Логин">
                         {% if 'nickname' in form.errors %}
                             <small class="text-danger">{{ form.errors['nickname'][0] }}</small>

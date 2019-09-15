@@ -1,16 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <h1>Создание сессии</h1>
     <form method="post" id="create_session">
         <div class="form-group">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <label for="usersInput">Пользователи:</label>
+        </div>
+        <div id="maintain_selectors" class="form-group">
+            <label>Мэйнтейнеры:</label>
+            <div class="maintain-selector d-flex">
+                <select class="select-maintain custom-select mb-2" data-index="0" name="maintainer[]">
+                    <option selected>Мэйнтейнер</option>
+                    {% for user in users %}
+                    <option value={{ user.id }}> {{ user.nickname }}</option>
+                    {% endfor %}
+                </select>
+                <i class="material-icons mt-2 ml-2 delete-maintain" style="color: red; cursor: pointer;">
+                    clear
+                </i>
+            </div>
         </div>
         <div id="user_selectors" class="form-group">
-            <label>Участники</label>
+            <label>Участники:</label>
             <div class="user-selector d-flex">
-                <select class="select-group custom-select mb-2" data-index="0" name="user[]">
+                <select class="select-user custom-select mb-2" data-index="0" name="user[]">
                     <option selected>Пользователь</option>
                     {% for user in users %}
                     <option value={{ user.id }}> {{ user.nickname }}</option>
@@ -21,16 +35,10 @@
                 </i>
             </div>
         </div>
-        <div class="form-group">
-            <label for="datetimeInput">Дата и время начала сессии</label>
-            <input type="datetime" name="datetimeInput" class="form-control" placeholder="{{ current_dt }}">
-        </div>
-        <button type="submit" name="create" class="btn btn-primary">Создать сессию</button>
+        <button type="submit" name="create" class="btn btn-dark btn-block">Создать сессию</button>
     </form>
-{% endblock %}
-{% block custom_script %}
     <script type="application/javascript">
-        $("body").on("change", "select.select-group", (el) => {
+        $("body").on("change", "select.select-user", (el) => {
             let element = $(el.target);
             let index = parseInt(element.attr("data-index")) + 1;
             if ($("select.user-selector[data-index=" + index + "]").length === 0) {
@@ -43,6 +51,21 @@
         $("body").on("click", "i.delete-user", (el) => {
             let element = $(el.target);
             element.parent("div.user-selector")[0].remove();
+        });
+
+        $("body").on("change", "select.select-maintain", (el) => {
+            let element = $(el.target);
+            let index = parseInt(element.attr("data-index")) + 1;
+            if ($("select.maintain-selector[data-index=" + index + "]").length === 0) {
+                let new_el = element.parent().clone();
+                new_el.find("select").attr("data-index", index);
+                $("#maintain_selectors").append(new_el);
+            }
+        });
+
+        $("body").on("click", "i.delete-maintain", (el) => {
+            let element = $(el.target);
+            element.parent("div.maintain-selector")[0].remove();
         });
     </script>
 {% endblock %}

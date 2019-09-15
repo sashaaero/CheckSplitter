@@ -6,14 +6,6 @@ from pony.orm import select, commit, flush, desc, sql_debug
 from flask import render_template, request, flash, redirect, url_for
 from datetime import datetime
 
-def authorized():
-    if not current_user:
-        return False
-    auth = current_user.is_authenticated
-    if callable(auth):
-        return auth()
-    return auth
-
 
 @app.route('/', methods=["POST", "GET"])
 @login_required
@@ -21,27 +13,37 @@ def index():
     return render_template('index.html', title='Главная')
 
 
-@app.route('/create_session', methods=["POST", "GET"])
+@app.route('/session/new', methods=["POST", "GET"])
+@login_required
 def session():
-    if not authorized():
-        return redirect(url_for('login'))
-    user = User[current_user.id]
-
-    users = select(user in User)[:]
-    users.remove(user)
-    current_dt = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    users = list(select(u for u in User))
+    users.remove(current_user)
 
     form = request.form
     if request.method == 'POST' and 'create' in request.form:
+        maintainers = request.form.getlist('maintainer[]')
         invited_users = request.form.getlist('user[]')
+        try:
+            maintainers.remove('Мэйнтейнер')
+        except ValueError:
+            pass
+
         try:
             invited_users.remove('Пользователь')
         except ValueError:
             pass
 
-        start_dt = request.form.get('datetimeInput')
+        start_dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         new_session = Session()
-        new_session.session_maintains.add(user)
+
+        for user_id in maintainers:
+            u = User[user_id]
+            s = SessionMaintain(
+                user=u,
+                session=new_session
+            )
+            new_session.session_maintains.add(s)
+
         for user_id in invited_users:
             u = User[user_id]
             new_session.users.add(u)
@@ -49,7 +51,7 @@ def session():
 
         return redirect(url_for('index'))
 
-    return render_template('session.html', title='Session template', users=users, current_dt=current_dt)
+    return render_template('session.html', title='Session template', users=users)
 
 
 @app.route('/reg', methods=['POST', 'GET'])
