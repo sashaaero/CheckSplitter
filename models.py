@@ -54,6 +54,6 @@ class Credit(db.Entity):
 class SessionMaintain(db.Entity):
     id = PrimaryKey(int, auto=True)
     user = Required(User)
-    value = Required(int)
+    value = Required(int,default=0)
     session = Required(Session)
 
