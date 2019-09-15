@@ -6,7 +6,6 @@ from flask_login import UserMixin
 
 db = Database(**settings['db_params'])
 
-
 class User(db.Entity, UserMixin):
     id = PrimaryKey(int, auto=True)
     fullname = Optional(str)
@@ -29,6 +28,7 @@ class User(db.Entity, UserMixin):
 
 class Session(db.Entity):
     id = PrimaryKey(int, auto=True)
+    name = Optional(str)
     users = Set(User)
     orders = Set('OrderedItem')
     session_maintains = Set('SessionMaintain')
