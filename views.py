@@ -94,8 +94,8 @@ def order_new():
 # @login_required
 def check_credit():
     user = current_user
-    masters = [["Санёк", 500], ["Ванёк", 400], ["Макс", 800]]
-    slaves = [["Паша", 350], ["Игорь", 750], ["Жека", 600]]
+    masters = select(c for c in Credit if c.master.nickname == user.nickname).order_by(Credit.value)[:]
+    slaves = select(c for c in Credit if c.slave.nickname == user.nickname).order_by(Credit.value)[:]
     return render_template('credit.html', user=user, masters=masters, slaves=slaves)
 
 

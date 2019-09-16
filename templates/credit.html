@@ -1,46 +1,59 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<h2>Кому должен я</h2>
 <table class="table table-hover">
     <tbody id="myTable">
-    {% for master in masters %}
-        <tr>
-            <td>
-                {{ master[0] }}
-            </td>
-            <td>
-                {{ master[1] }}
-            </td>
-            <td>
-                <div class="col-md-8">
-                    <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('edit_debt') }}">Изменить</a>
-                </div>
-            </td>
-        </tr>
-    {% endfor %}
+    {% if masters %}
+        <h2>Кто должен мне</h2>
+        {% for master in masters %}
+            <tr>
+                <td>
+                    {{ master.slave.fullname }}
+                </td>
+                <td>
+                    {{ master.slave.nickname }}
+                </td>
+                <td>
+                    {{ master.value }}
+                </td>
+                <td>
+                    <div class="col-md-8">
+                        <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('edit_debt') }}">Изменить</a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <h2>Вам никто ничего не должен.</h2>
+    {% endif %}
     </tbody>
 </table>
 
-<h2>Кто должен мне</h2>
 <table class="table table-hover">
     <tbody id="myTable">
-    {% for slave in slaves %}
-        <tr>
-            <td>
-                {{ slave[0] }}
-            </td>
-            <td>
-                {{ slave[1] }}
-            </td>
-            <td>
-                <div class="col-md-8">
-                    <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('edit_debt') }}">Изменить</a>
-                </div>
-            </td>
-        </tr>
-    {% endfor %}
+    {% if slaves %}
+        <h2>Кому должен я</h2>
+        {% for slave in slaves %}
+            <tr>
+                <td>
+                    {{ slave.master.fullname }}
+                </td>
+                <td>
+                    {{ slave.master.nickname }}
+                </td>
+                <td>
+                    {{ slave.value }}
+                </td>
+                <td>
+                    <div class="col-md-8">
+                        <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('edit_debt') }}">Изменить</a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <h2>Вы никому ничего не должны.</h2>
+    {% endif %}
     </tbody>
 </table>
 {% endblock %}
