@@ -56,3 +56,7 @@ class OrderItem(Form):
 	price = StringField('Цена', [InputRequired()])
 	users = StringField('Кто заказал')
 	session = StringField('Ресторан')
+
+
+class CreditForm(Form):
+	value = StringField('Сумма', [Regexp('^\d{1,5}$')])

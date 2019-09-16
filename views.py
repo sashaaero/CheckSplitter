@@ -1,7 +1,7 @@
 from app import app
 from flask_login import login_user, current_user, logout_user, login_required
 from models import *
-from forms import RegForm, LoginForm, OrderItem
+from forms import RegForm, LoginForm, OrderItem, CreditForm
 from pony.orm import select, commit, flush, desc, sql_debug
 from flask import render_template, request, flash, redirect, url_for
 from datetime import datetime
@@ -91,15 +91,22 @@ def order_new():
 
 
 @app.route('/credit', methods=['POST','GET'])
-# @login_required
+@login_required
 def check_credit():
+    form = CreditForm(request.form)
     user = current_user
     masters = select(c for c in Credit if c.master.nickname == user.nickname).order_by(Credit.value)[:]
     slaves = select(c for c in Credit if c.slave.nickname == user.nickname).order_by(Credit.value)[:]
-    return render_template('credit.html', user=user, masters=masters, slaves=slaves)
+    return render_template('credit.html', user=user, masters=masters, slaves=slaves, form=form)
 
 
-@app.route('/credit/edit', methods=['POST','GET'])
-# @login_required
-def edit_debt():
-    return render_template('edit_debt.html')
+@app.route('/edit_credit', methods=['POST'])
+@login_required
+def edit_credit():
+    credit_line_id = request.form['id']
+    form = CreditForm(request.form)
+    user = Credit.get(id=credit_line_id)
+    if request.method == "POST" and form.validate():
+        print('i\'am here')
+        return redirect(url_for('check_credit'))
+    return render_template('edit_credit.html', user=user, form=form)

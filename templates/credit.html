@@ -17,9 +17,12 @@
                     {{ master.value }}
                 </td>
                 <td>
-                    <div class="col-md-8">
-                        <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('edit_debt') }}">Изменить</a>
-                    </div>
+                    <form action="{{ url_for('edit_credit') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="col-md-8">
+                            <button type="submit" class="btn" name="id" value="{{ master.id }}" >Изменить</button>
+                        </div>
+                    </form>
                 </td>
             </tr>
         {% endfor %}
@@ -45,9 +48,12 @@
                     {{ slave.value }}
                 </td>
                 <td>
-                    <div class="col-md-8">
-                        <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('edit_debt') }}">Изменить</a>
-                    </div>
+                    <form action="{{ url_for('edit_credit') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="col-md-8">
+                            <button type="submit" class="btn" name="id" value="{{ slave.id }}">Изменить</button>
+                        </div>
+                    </form>
                 </td>
             </tr>
         {% endfor %}
