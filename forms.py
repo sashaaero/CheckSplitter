@@ -37,7 +37,14 @@ def pwd_match_check(form, field):
 	user = User.get(nickname=form.data['nickname'])
 	if check is None:	
 		raise ValidationError('Wrong password. Try again. password')
-		
+
+
+def check_credit_form(form, field):
+	from re import search
+	number = form.value.data
+	if search('^[0-9]{1,5}$', number) is None:
+		raise ValidationError('Введите корректную сумму.')
+
 
 class RegForm(Form):
 	nickname = StringField('Nickname', [InputRequired(), nickname_free])
@@ -59,4 +66,4 @@ class OrderItem(Form):
 
 
 class CreditForm(Form):
-	value = StringField('Сумма', [Regexp('^\d{1,5}$')])
+	value = StringField('Сумма', [InputRequired(), ])

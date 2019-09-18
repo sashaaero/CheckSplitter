@@ -19,6 +19,9 @@
                         <div class="col-md-8">
                             {{ render_field(form.value) }}
                         </div>
+                        {% if 'value' in form.errors %}
+                            <small class="text-danger">{{ form.errors['value'][0] }}</small>
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>

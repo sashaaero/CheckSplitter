@@ -103,10 +103,10 @@ def check_credit():
 @app.route('/edit_credit', methods=['POST'])
 @login_required
 def edit_credit():
-    credit_line_id = request.form['id']
     form = CreditForm(request.form)
-    user = Credit.get(id=credit_line_id)
     if request.method == "POST" and form.validate():
-        print('i\'am here')
+        print('i\'am here!')
         return redirect(url_for('check_credit'))
+    credit_line_id = request.form['id']
+    user = Credit.get(id=credit_line_id)
     return render_template('edit_credit.html', user=user, form=form)
