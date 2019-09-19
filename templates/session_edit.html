@@ -3,77 +3,127 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6">
-            <h3>Пользователи сессии</h3>
-            <div class="form-group">
-                <div id="user_list" class="list-group d-flex">
-                  <li class="list-group-item">
-                      Cras justo odio
-                      <span class="float-right">
-                        <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
-                            <i class="material-icons" style="color: red; cursor: pointer;">
-                                clear
-                            </i>
-                        </button>
-                      </span>
-                  </li>
-                  <li class="list-group-item">
-                      Dapibus ac facilisis in
-                      <span class="float-right">
-                        <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
-                            <i class="material-icons" style="color: red; cursor: pointer;">
-                                clear
-                            </i>
-                        </button>
-                      </span>
-                  </li>
-                  <li class="list-group-item">
-                      Morbi leo risus
-                      <span class="float-right">
-                        <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
-                            <i class="material-icons" style="color: red; cursor: pointer;">
-                                clear
-                            </i>
-                        </button>
-                      </span>
-                  </li>
-                  <li class="list-group-item">
-                      Porta ac consectetur ac
-                      <span class="float-right">
-                        <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
-                            <i class="material-icons" style="color: red; cursor: pointer;">
-                                clear
-                            </i>
-                        </button>
-                      </span>
-                  </li>
-                  <li class="list-group-item">
-                      Vestibulum at eros
-                      <span class="float-right">
-                        <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
-                            <i class="material-icons" style="color: red; cursor: pointer;">
-                                clear
-                            </i>
-                        </button>
-                      </span>
-                  </li>
+            <h3>Редактирование заказа:</h3>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-item nav-link" id="users-tab" role="tab" aria-controls="users" data-toggle="tab" href="#users">Пользователи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-item nav-link" id="dish-tab" role="tab" aria-controls="dish" data-toggle="tab" href="#dish">Блюдо</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div id="users" class="tab-pane fade" role="tabpanel"  aria-labelledby="users-tab">
+                    <div class="form-group">
+                        <div id="user_list" class="list-group d-flex">
+                          <li class="list-group-item">
+                              Cras justo odio
+                              <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">
+                              Dapibus ac facilisis in
+                              <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">
+                              Morbi leo risus
+                              <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">
+                              Porta ac consectetur ac
+                              <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">
+                              Vestibulum at eros
+                              <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                        </div>
+                        <p></p>
+                        <input type="submit" value="Добавить пользователя" class="btn btn-dark btn-block">
+                    </div>
                 </div>
-                <p></p>
-                <input type="submit" value="Добавить пользователя" class="btn btn-dark btn-block">
+                <div id="dish" class="tab-pane fade" role="tabpanel"  aria-labelledby="dish-tab">
+                    <div class="form-group">
+                        <div id="user_list" class="list-group d-flex">
+                          <li class="list-group-item">Cras justo odio
+                            <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">Dapibus ac facilisis in
+                            <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">Morbi leo risus
+                            <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">Porta ac consectetur ac
+                            <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                          <li class="list-group-item">Vestibulum at eros
+                            <span class="float-right">
+                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                        delete_forever
+                                    </i>
+                                </button>
+                              </span>
+                          </li>
+                        <p></p>
+                        <input type="submit" value="Добавить заказ" class="btn btn-dark btn-block">
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <h3>Заказы</h3>
-            <div class="form-group">
-                <div id="user_list" class="list-group d-flex">
-                  <li class="list-group-item">Cras justo odio </li>
-                  <li class="list-group-item">Dapibus ac facilisis in</li>
-                  <li class="list-group-item">Morbi leo risus</li>
-                  <li class="list-group-item">Porta ac consectetur ac</li>
-                  <li class="list-group-item">Vestibulum at eros</li>
-                </div>
-                <p></p>
-                <input type="submit" value="Добавить заказ" class="btn btn-dark btn-block">
-            </div>
-        </div>
-    </div>
 {% endblock %}
