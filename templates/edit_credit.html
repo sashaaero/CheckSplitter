@@ -3,7 +3,7 @@
 {% block content %}
 {% from "formhelpers.html" import render_field %}
 
-    <form action="{{ url_for('edit_credit') }}" method="POST">
+    <form action="{{ url_for('calculate') }}" method="POST">
         <table class="table table-hover">
             <tbody id="myTable">
                 <tr>
@@ -27,7 +27,7 @@
                 <tr>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="col-md-8">
-                        <button type="submit" class="btn">Пересчитать</button>
+                        <button type="submit" class="btn" name="id" value="{{ user.id }}" >Пересчитать</button>
                     </div>
                 </tr>
             </tbody>

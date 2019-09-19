@@ -66,4 +66,4 @@ class OrderItem(Form):
 
 
 class CreditForm(Form):
-	value = StringField('Сумма', [InputRequired(), ])
+	value = StringField('Сумма', [InputRequired(), check_credit_form ])

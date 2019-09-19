@@ -93,20 +93,35 @@ def order_new():
 @app.route('/credit', methods=['POST','GET'])
 @login_required
 def check_credit():
-    form = CreditForm(request.form)
     user = current_user
     masters = select(c for c in Credit if c.master.nickname == user.nickname).order_by(Credit.value)[:]
     slaves = select(c for c in Credit if c.slave.nickname == user.nickname).order_by(Credit.value)[:]
-    return render_template('credit.html', user=user, masters=masters, slaves=slaves, form=form)
+    return render_template('credit.html', user=user, masters=masters, slaves=slaves)
 
 
 @app.route('/edit_credit', methods=['POST'])
 @login_required
 def edit_credit():
-    form = CreditForm(request.form)
-    if request.method == "POST" and form.validate():
-        print('i\'am here!')
-        return redirect(url_for('check_credit'))
+    form = CreditForm()
     credit_line_id = request.form['id']
     user = Credit.get(id=credit_line_id)
     return render_template('edit_credit.html', user=user, form=form)
+
+
+@app.route('/calculate', methods=['POST'])
+@login_required
+def calculate():
+    form = CreditForm(request.form)
+    if request.method == 'POST':
+        input_value = int(form.data['value'])
+        cur_user_id = request.form['id']
+        val = Credit[cur_user_id].value
+        result = val - input_value
+        if result > 0:
+            Credit[cur_user_id].value = result
+        elif result == 0:
+            Credit[cur_user_id].delete()
+        else:
+            flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
+            return redirect(url_for('check_credit'))
+        return redirect(url_for('check_credit'))
