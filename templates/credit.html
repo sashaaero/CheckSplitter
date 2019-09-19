@@ -18,20 +18,19 @@
         <h2>Кто должен мне</h2>
         {% for master in masters %}
             <tr>
-                <td>
-                    {{ master.slave.fullname }}
-                </td>
-                <td>
+                <td class="align-middle">
                     {{ master.slave.nickname }}
                 </td>
-                <td>
+                <td class="align-middle">
                     {{ master.value }}
                 </td>
-                <td>
+                <td class="align-middle">
                     <form action="{{ url_for('edit_credit') }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="col-md-8">
-                            <button type="submit" class="btn" name="id" value="{{ master.id }}" >Изменить</button>
+                            <button type="submit" class="btn" name="id" value="{{ master.id }}" >
+                                <i class="material-icons" style="color: #000000; cursor: pointer;font-size: 30px">create</i>
+                            </button>
                         </div>
                     </form>
                 </td>
@@ -49,20 +48,19 @@
         <h2>Кому должен я</h2>
         {% for slave in slaves %}
             <tr>
-                <td>
-                    {{ slave.master.fullname }}
-                </td>
-                <td>
+                <td class="align-middle">
                     {{ slave.master.nickname }}
                 </td>
-                <td>
+                <td class="align-middle">
                     {{ slave.value }}
                 </td>
-                <td>
+                <td class="align-middle">
                     <form action="{{ url_for('edit_credit') }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="col-md-8">
-                            <button type="submit" class="btn" name="id" value="{{ slave.id }}">Изменить</button>
+                            <button type="submit" class="btn" name="id" value="{{ slave.id }}">
+                                <i class="material-icons" style="color: #000000; cursor: pointer; font-size: 30px">create</i>
+                            </button>
                         </div>
                     </form>
                 </td>
