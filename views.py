@@ -13,12 +13,6 @@ def index():
     return render_template('index.html', title='Главная')
 
 
-@app.route('/session/<int:sid>/delete-user/<int:uid>', methods=['DELETE'])
-def delete_user_from_session(sid, uid):
-    Session[sid].users.remove(User[uid])
-    return redirect(url_for('session_edit'))
-
-
 @app.route('/session/new')
 @login_required
 def session_new():
@@ -32,8 +26,11 @@ def session_new():
 
 @app.route('/session/<int:sid>/')
 def session_edit(sid):
-    session = Session[sid]
+    session = Session.get(id=sid)
+    if session is None:
+        return redirect(url_for('index'))
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
+    users = select(u.user for u in session.users).order_by(lambda u: u.id)
     return render_template('session_edit.html', title=title, session=session, users=session.users.user)
 
 
@@ -54,9 +51,26 @@ def add_user_(sid, uid):
     session = Session[sid]
     user = User[uid]
     check = UserInSession(session=session, user=user)
-    if check is None:
+    if check is None:  # TODO add error to logs
         UserInSession(session=session, user=user)
     return redirect(url_for('add_user', sid=sid))
+
+
+@app.route('/session/<int:sid>/delete_user/<int:uid>')
+def delete_user(sid, uid):
+    session = Session[sid]
+    user = User[uid]
+    check = UserInSession.get(session=session, user=user)
+    if check is None:
+        pass  # TODO add error to logs
+    check.delete()
+    commit()
+    num = select(u for u in session.users).count()
+    if num > 0:
+        return redirect(url_for('session_edit', sid=sid))
+    session.delete()
+    return redirect(url_for('index'))
+
 
 
 @app.route('/reg', methods=['POST', 'GET'])
