@@ -34,7 +34,7 @@ def session_new():
 def session_edit(sid):
     session = Session[sid]
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
-    return render_template('session_edit.html', title=title, session=session)
+    return render_template('session_edit.html', title=title, session=session, users=session.users.user)
 
 
 @app.route('/session/<int:sid>/add_user')
