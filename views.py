@@ -64,11 +64,25 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/session/order/new', methods=["POST", "GET"])
-def order_new():
-    user = current_user
+@app.route('/<int:sid>/order/new', methods=["POST", "GET"])
+@login_required
+def order_new(sid):
     form = OrderItem(request.form)
-    sessions_ = request.form['session']
+    sess = db.Session.get(id=sid)
+    if request.metod == 'POST' and form.validate():
+        OrderItem(title=form.data['title'],
+                  price=form.data['price'],
+                  session=sess)
+        return redirect(url_for('/<int:sid>/order/new'))
+    return render_template('order_new.html', form=form, sess=sess)
+
+
+@app.route('/history', methods=['POST', 'GET'])
+@login_required
+def history():
+    user = current_user
+    user_history = select(s for s in db.Session if s.users == user)
+    return render_template('history.html', user_history=user_history, user=user)
 
 
 @app.route('/credit', methods=['POST','GET'])
