@@ -37,14 +37,26 @@ def session_edit(sid):
     return render_template('session_edit.html', title=title, session=session)
 
 
-@app.route('/session/<int:sid>/add_user', methods=['POST', 'GET'])
+@app.route('/session/<int:sid>/add_user')
 def add_user(sid):
     session = Session[sid]
-    if request.method == 'POST':
-        pass
-    users = select(u for u in User if u != current_user and not u.virtual)[:]
-    return render_template('add_user.html', cuser=current_user, users=users)
+    users = select(u for u in User if u not in session.users.user and not u.virtual)
+    users_list = []
+    for u in users:
+        users_list.append({
+            'id': u.id, 'fullname': u.fullname, 'login': u.nickname
+        })
+    return render_template('add_user.html', cuser=current_user, users=users_list, session=session   )
 
+
+@app.route('/session/<int:sid>/add_user/<int:uid>')
+def add_user_(sid, uid):
+    session = Session[sid]
+    user = User[uid]
+    check = UserInSession(session=session, user=user)
+    if check is None:
+        UserInSession(session=session, user=user)
+    return redirect(url_for('add_user', sid=sid))
 
 
 @app.route('/reg', methods=['POST', 'GET'])
