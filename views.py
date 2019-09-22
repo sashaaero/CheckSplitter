@@ -19,20 +19,32 @@ def delete_user_from_session(sid, uid):
     return redirect(url_for('session_edit'))
 
 
+@app.route('/session/new')
+@login_required
+def session_new():
+    curr_session = current_user.current_session
+    if curr_session is None:
+        curr_session = Session()
+        UserInSession(user=current_user, session=curr_session)
+        commit()
+    return redirect(url_for('session_edit', sid=curr_session.id))
+
+
 @app.route('/session/<int:sid>/')
 def session_edit(sid):
     session = Session[sid]
-    return render_template('session_edit.html', title="Создание сессии")
+    title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
+    return render_template('session_edit.html', title=title, session=session)
 
 
+@app.route('/session/<int:sid>/add_user', methods=['POST', 'GET'])
+def add_user(sid):
+    session = Session[sid]
+    if request.method == 'POST':
+        pass
+    users = select(u for u in User if u != current_user and not u.virtual)[:]
+    return render_template('add_user.html', cuser=current_user, users=users)
 
-
-@app.route('/session/new')
-@login_required
-def session():
-    s = Session()
-    commit()
-    return redirect(url_for('session_edit', sid=s.id))
 
 
 @app.route('/reg', methods=['POST', 'GET'])
@@ -57,7 +69,7 @@ def login():
     return render_template('login.html', form=form, title='Вход')
 
 
-@app.route('/logout', methods=['POST', 'GET'])
+@app.route('/logout')
 @login_required
 def logout():
     logout_user()
@@ -85,13 +97,11 @@ def history():
     return render_template('history.html', user_history=user_history, user=user)
 
 
-@app.route('/credit', methods=['POST','GET'])
+@app.route('/credit')
 @login_required
 def check_credit():
-    user = current_user
-    masters = select(c for c in Credit if c.master.nickname == user.nickname).order_by(Credit.value)[:]
-    slaves = select(c for c in Credit if c.slave.nickname == user.nickname).order_by(Credit.value)[:]
-    return render_template('credit.html', user=user, masters=masters, slaves=slaves)
+    return render_template('credit.html',
+                           user=current_user, masters=current_user.mastered_credits, slaves=current_user.slaved_credits)
 
 
 @app.route('/edit_credit', methods=['POST'])
@@ -107,16 +117,15 @@ def edit_credit():
 @login_required
 def calculate():
     form = CreditForm(request.form)
-    if request.method == 'POST':
-        input_value = int(form.data['value'])
-        cur_user_id = request.form['id']
-        val = Credit[cur_user_id].value
-        result = val - input_value
-        if result > 0:
-            Credit[cur_user_id].value = result
-        elif result == 0:
-            Credit[cur_user_id].delete()
-        else:
-            flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
-            return redirect(url_for('check_credit'))
+    input_value = int(form.data['value'])
+    cur_user_id = request.form['id']
+    val = Credit[cur_user_id].value
+    result = val - input_value
+    if result > 0:
+        Credit[cur_user_id].value = result
+    elif result == 0:
+        Credit[cur_user_id].delete()
+    else:
+        flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
         return redirect(url_for('check_credit'))
+    return redirect(url_for('check_credit'))

@@ -22,6 +22,10 @@ class User(db.Entity, UserMixin):
     def is_authenticated(self):
         return True
 
+    @property
+    def current_session(self):
+        return select(s.session for s in self.sessions if s.session.end is None).first()
+
 
 class Session(db.Entity):
     id = PrimaryKey(int, auto=True)
