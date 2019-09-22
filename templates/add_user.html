@@ -24,7 +24,6 @@
             if (search !== '' && item.login.startsWith(search)){
                 let elem = document.createElement("a");
                 elem.href = '/session/{{ session.id }}/add_user/' + item.id;
-                console.log(elem.innerHTML);
                 elem.innerHTML = '<i class="material-icons" style="color: darkgray; cursor: pointer; font-size:32px; line-height:1.2">\n' +
                     '                                        add_circle_outline\n' +
                     '                                    </i>';
