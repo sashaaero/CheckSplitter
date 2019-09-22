@@ -13,45 +13,26 @@ def index():
     return render_template('index.html', title='Главная')
 
 
-@app.route('/session/new', methods=["POST", "GET"])
+@app.route('/session/<int:sid>/delete-user/<int:uid>', methods=['DELETE'])
+def delete_user_from_session(sid, uid):
+    Session[sid].users.remove(User[uid])
+    return redirect(url_for('session_edit'))
+
+
+@app.route('/session/<int:sid>/')
+def session_edit(sid):
+    session = Session[sid]
+    return render_template('session_edit.html', title="Создание сессии")
+
+
+
+
+@app.route('/session/new')
 @login_required
 def session():
-    users = list(select(u for u in User))
-    users.remove(current_user)
-
-    form = request.form
-    if request.method == 'POST' and 'create' in request.form:
-        maintainers = request.form.getlist('maintainer[]')
-        invited_users = request.form.getlist('user[]')
-        try:
-            maintainers.remove('Мэйнтейнер')
-        except ValueError:
-            pass
-
-        try:
-            invited_users.remove('Пользователь')
-        except ValueError:
-            pass
-
-        start_dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        new_session = Session()
-
-        for user_id in maintainers:
-            u = User[user_id]
-            s = SessionMaintain(
-                user=u,
-                session=new_session
-            )
-            new_session.session_maintains.add(s)
-
-        for user_id in invited_users:
-            u = User[user_id]
-            new_session.users.add(u)
-        new_session.start = start_dt
-
-        return redirect(url_for('index'))
-
-    return render_template('session.html', title='Session template', users=users)
+    s = Session()
+    commit()
+    return redirect(url_for('session_edit', sid=s.id))
 
 
 @app.route('/reg', methods=['POST', 'GET'])
