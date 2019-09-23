@@ -51,6 +51,10 @@ class RegForm(Form):
 	fullname = StringField('Fullname', [InputRequired()])
 	pwd1 = PasswordField('Password', [InputRequired(), len_check])
 	pwd2 = PasswordField('Password again', [InputRequired(), pwd_check])
+	
+	
+class VirtualRegForm(Form):
+	fullname = StringField('Fullname', [InputRequired()])
 
 
 class LoginForm(Form):
