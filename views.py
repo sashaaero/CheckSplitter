@@ -30,8 +30,8 @@ def session_edit(sid):
     if session is None:
         return redirect(url_for('index'))
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
-    users = select(u.user for u in session.users).order_by(lambda u: u.id)
-    return render_template('session_edit.html', title=title, session=session, users=session.users.user)
+    users = select(u.user for u in session.users).order_by(lambda u: u.id)[:]
+    return render_template('session_edit.html', title=title, session=session, users=users)
 
 
 @app.route('/session/<int:sid>/add_user')
