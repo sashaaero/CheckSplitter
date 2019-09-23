@@ -13,26 +13,64 @@ def index():
     return render_template('index.html', title='Главная')
 
 
-@app.route('/session/<int:sid>/delete-user/<int:uid>', methods=['DELETE'])
-def delete_user_from_session(sid, uid):
-    Session[sid].users.remove(User[uid])
-    return redirect(url_for('session_edit'))
+@app.route('/session/new')
+@login_required
+def session_new():
+    curr_session = current_user.current_session
+    if curr_session is None:
+        curr_session = Session()
+        UserInSession(user=current_user, session=curr_session)
+        commit()
+    return redirect(url_for('session_edit', sid=curr_session.id))
 
 
 @app.route('/session/<int:sid>/')
 def session_edit(sid):
+    session = Session.get(id=sid)
+    if session is None:
+        return redirect(url_for('index'))
+    title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
+    users = select(u.user for u in session.users).order_by(lambda u: u.id)[:]
+    return render_template('session_edit.html', title=title, session=session, users=users)
+
+
+@app.route('/session/<int:sid>/add_user')
+def add_user(sid):
     session = Session[sid]
-    return render_template('session_edit.html', title="Создание сессии")
+    users = select(u for u in User if u not in session.users.user and not u.virtual)
+    users_list = []
+    for u in users:
+        users_list.append({
+            'id': u.id, 'fullname': u.fullname, 'login': u.nickname
+        })
+    return render_template('add_user.html', cuser=current_user, users=users_list, session=session   )
 
 
+@app.route('/session/<int:sid>/add_user/<int:uid>')
+def add_user_(sid, uid):
+    session = Session[sid]
+    user = User[uid]
+    check = UserInSession(session=session, user=user)
+    if check is None:  # TODO add error to logs
+        UserInSession(session=session, user=user)
+    return redirect(url_for('add_user', sid=sid))
 
 
-@app.route('/session/new')
-@login_required
-def session():
-    s = Session()
+@app.route('/session/<int:sid>/delete_user/<int:uid>')
+def delete_user(sid, uid):
+    session = Session[sid]
+    user = User[uid]
+    check = UserInSession.get(session=session, user=user)
+    if check is None:
+        pass  # TODO add error to logs
+    check.delete()
     commit()
-    return redirect(url_for('session_edit', sid=s.id))
+    num = select(u for u in session.users).count()
+    if num > 0:
+        return redirect(url_for('session_edit', sid=sid))
+    session.delete()
+    return redirect(url_for('index'))
+
 
 
 @app.route('/reg', methods=['POST', 'GET'])
@@ -57,27 +95,39 @@ def login():
     return render_template('login.html', form=form, title='Вход')
 
 
-@app.route('/logout', methods=['POST', 'GET'])
+@app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
 
-@app.route('/session/order/new', methods=["POST", "GET"])
-def order_new():
-    user = current_user
+@app.route('/<int:sid>/order/new', methods=["POST", "GET"])
+@login_required
+def order_new(sid):
     form = OrderItem(request.form)
-    sessions_ = request.form['session']
+    sess = db.Session.get(id=sid)
+    if request.metod == 'POST' and form.validate():
+        OrderItem(title=form.data['title'],
+                  price=form.data['price'],
+                  session=sess)
+        return redirect(url_for('/<int:sid>/order/new'))
+    return render_template('order_new.html', form=form, sess=sess)
 
 
-@app.route('/credit', methods=['POST','GET'])
+@app.route('/history', methods=['POST', 'GET'])
+@login_required
+def history():
+    user = current_user
+    user_history = select(s for s in db.Session if s.users == user)
+    return render_template('history.html', user_history=user_history, user=user)
+
+
+@app.route('/credit')
 @login_required
 def check_credit():
-    user = current_user
-    masters = select(c for c in Credit if c.master.nickname == user.nickname).order_by(Credit.value)[:]
-    slaves = select(c for c in Credit if c.slave.nickname == user.nickname).order_by(Credit.value)[:]
-    return render_template('credit.html', user=user, masters=masters, slaves=slaves)
+    return render_template('credit.html',
+                           user=current_user, masters=current_user.mastered_credits, slaves=current_user.slaved_credits)
 
 
 @app.route('/edit_credit', methods=['POST'])
@@ -93,16 +143,15 @@ def edit_credit():
 @login_required
 def calculate():
     form = CreditForm(request.form)
-    if request.method == 'POST':
-        input_value = int(form.data['value'])
-        cur_user_id = request.form['id']
-        val = Credit[cur_user_id].value
-        result = val - input_value
-        if result > 0:
-            Credit[cur_user_id].value = result
-        elif result == 0:
-            Credit[cur_user_id].delete()
-        else:
-            flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
-            return redirect(url_for('check_credit'))
+    input_value = int(form.data['value'])
+    cur_user_id = request.form['id']
+    val = Credit[cur_user_id].value
+    result = val - input_value
+    if result > 0:
+        Credit[cur_user_id].value = result
+    elif result == 0:
+        Credit[cur_user_id].delete()
+    else:
+        flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
         return redirect(url_for('check_credit'))
+    return redirect(url_for('check_credit'))

@@ -6,7 +6,7 @@
             <h3>Редактирование сессии:</h3>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-item nav-link" id="users-tab" role="tab" aria-controls="users" data-toggle="tab" href="#users">Пользователи</a>
+                    <a class="nav-item nav-link active" id="users-tab" role="tab" aria-controls="users" data-toggle="tab" href="#users">Пользователи</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-item nav-link" id="dish-tab" role="tab" aria-controls="dish" data-toggle="tab" href="#dish">Блюдо</a>
@@ -14,19 +14,20 @@
             </ul>
 
             <div class="tab-content" id="myTabContent">
-                <div id="users" class="tab-pane fade" role="tabpanel"  aria-labelledby="users-tab">
+                <div id="users" class="tab-pane fade active show" role="tabpanel"  aria-labelledby="users-tab">
                     <div class="form-group">
                         <div id="user_list" class="list-group d-flex">
                           {% for user in users %}
                           <li class="list-group-item">
-                              {{ user.nickname }}
+                              <h3>{{ user.fullname }}
                               <span class="float-right">
-                                <button type="button" class="btn btn-xs btn-default d-flex justify-content-center">
-                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                  <a href="{{ url_for('delete_user', sid=session.id, uid=user.id) }}">
+                                      <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
                                         delete_forever
-                                    </i>
-                                </button>
+                                      </i>
+                                  </a>
                               </span>
+                                  </h3>
                           </li>
                           {% endfor %}
                           <button type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">
