@@ -84,15 +84,17 @@ def reg():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    form = LoginForm(request.form)
-    if request.method == 'POST' and form.validate():
-        user = User.get(nickname=form.data['nickname'])
-        pwd = form.data['pwd']
-        if user.password != pwd:
-            return 'Incorrect password'
-        login_user(user)
-        return redirect(url_for('index'))
-    return render_template('login.html', form=form, title='Вход')
+	if current_user.is_authenticated:
+		return redirect(url_for('index'))
+	form = LoginForm(request.form)
+	if request.method == 'POST' and form.validate():
+		user = User.get(nickname=form.data['nickname'])
+		pwd = form.data['pwd']
+		if user.password != pwd:
+			return 'Incorrect password'
+		login_user(user)
+		return redirect(url_for('index'))
+	return render_template('login.html', form=form, title='Вход')
 
 
 @app.route('/logout')
