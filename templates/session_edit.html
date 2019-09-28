@@ -42,7 +42,9 @@
                         <div id="orders_list" class="list-group d-flex">
                           {% for order in orders %}
 							<li class="list-group-item">
-							    {{ order[0].title }}
+							    <a href="{{ url_for('order_edit', sid=session.id, oid=order[0].id) }}" class="btn btn-primary btn-dark">
+                                    {{ order[0].title }}
+                                </a>
 								<span class="float-right">
 								<a href="{{ url_for("order_delete",sid=session.id, oid=order[0].id) }}">
 									<i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
@@ -50,11 +52,7 @@
 									</i>
 								</a>
 								</span>
-                                <p></p>
                                 <div class="btn-group">
-                                    <a href="#" type="button" class="btn btn-primary btn-dark">
-                                       Редактировать
-                                    </a>
                                     <button type="button" class="btn btn-primary btn-dark dropdown-toggle" data-toggle="dropdown">
                                        Пользователи
                                     </button>

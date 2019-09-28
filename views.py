@@ -137,6 +137,28 @@ def order_delete(sid, oid):
     return redirect(url_for("session_edit", sid=sid))
 
 
+@app.route("/<int:sid>/order/<int:oid>/edit")
+@login_required
+def order_edit(sid, oid):
+    order = OrderedItem[oid]
+    users = []
+    for uis in order.user_in_sessions:
+        users.append(uis.user)
+    if request.method == "POST":
+        nicknames = request.form.getlist('users')
+        title = request.form.get('titleInput')
+        price = int(request.form.get('priceInput'))
+        if title != order.title:
+            order.title = title
+        if price != order.price:
+            order.price = price
+        for nickname in nicknames:
+            uis = UserInSession.get(user=User.get(nickname=nickname))
+            if uis not in order.user_in_sessions:
+                order.user_in_sessions.add(uis)
+    return render_template("order_edit.html", order=order, users=users)
+
+
 
 @app.route('/history', methods=['POST', 'GET'])
 @login_required
