@@ -31,7 +31,8 @@ def session_edit(sid):
         return redirect(url_for('index'))
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
     users = select(u.user for u in session.users).order_by(lambda u: u.id)[:]
-    return render_template('session_edit.html', title=title, session=session, users=users)
+    orders = session.orders
+    return render_template('session_edit.html', title=title, session=session, users=users, orders=orders)
 
 
 @app.route('/session/<int:sid>/add_user')
@@ -84,17 +85,17 @@ def reg():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-	if current_user.is_authenticated:
-		return redirect(url_for('index'))
-	form = LoginForm(request.form)
-	if request.method == 'POST' and form.validate():
-		user = User.get(nickname=form.data['nickname'])
-		pwd = form.data['pwd']
-		if user.password != pwd:
-			return 'Incorrect password'
-		login_user(user)
-		return redirect(url_for('index'))
-	return render_template('login.html', form=form, title='Вход')
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User.get(nickname=form.data['nickname'])
+        pwd = form.data['pwd']
+        if user.password != pwd:
+            return 'Incorrect password'
+        login_user(user)
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form, title='Вход')
 
 
 @app.route('/logout')
@@ -108,13 +109,25 @@ def logout():
 @login_required
 def order_new(sid):
     form = OrderItem(request.form)
-    sess = db.Session.get(id=sid)
-    if request.metod == 'POST' and form.validate():
-        OrderItem(title=form.data['title'],
-                  price=form.data['price'],
-                  session=sess)
-        return redirect(url_for('/<int:sid>/order/new'))
-    return render_template('order_new.html', form=form, sess=sess)
+    sess = Session.get(id=sid)
+    users = select(uis.user for uis in UserInSession if uis.session == sess)[:]
+    if request.method == 'POST' and form.validate():
+        nicknames = request.form.getlist('users')
+        order = OrderedItem(title=form.data['title'],
+                            price=form.data['price'],
+                            session=sess)
+        for nickname in nicknames:
+            uis = UserInSession.get(user=User.get(nickname=nickname))
+            order.user_in_sessions.add(uis)
+        return redirect(url_for('order_new', sid=sess.id))
+    return render_template('order_new.html', form=form, users=users)
+
+@app.route("/<int:sid>/order/<int:oid>/delete")
+@login_required
+def order_delete(sid, oid):
+    OrderedItem[oid].delete()
+    return redirect(url_for("session_edit", sid=sid))
+
 
 
 @app.route('/history', methods=['POST', 'GET'])

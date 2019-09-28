@@ -9,7 +9,7 @@
                     <a class="nav-item nav-link active" id="users-tab" role="tab" aria-controls="users" data-toggle="tab" href="#users">Пользователи</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-item nav-link" id="dish-tab" role="tab" aria-controls="dish" data-toggle="tab" href="#dish">Блюдо</a>
+                    <a class="nav-item nav-link" id="orders-tab" role="tab" aria-controls="orders" data-toggle="tab" href="#orders">Блюдо</a>
                 </li>
             </ul>
 
@@ -37,17 +37,17 @@
                         <p></p>
                     </div>
                 </div>
-                <div id="dish" class="tab-pane fade" role="tabpanel"  aria-labelledby="dish-tab">
+                <div id="orders" class="tab-pane fade" role="tabpanel"  aria-labelledby="order-tab">
                     <div class="form-group">
-                        <div id="user_list" class="list-group d-flex">
-                          {% for dish in dishes %}
+                        <div id="orders_list" class="list-group d-flex">
+                          {% for order in orders %}
                           <li class="list-group-item">
-                              {{ dish.title }}
+                              {{ order.title }}
                             <span class="float-right">
-                                <a href="{{ url_for() }}" type="button" class="btn btn-xs btn-default d-flex justify-content-center">
-                                    <i class="material-icons" style="color: darkgray; cursor: pointer;">
+                                <a href="{{ url_for("order_delete",sid=session.id, oid=order.id) }}">
+                                    <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
                                         delete_forever
-                                    </i>
+                                      </i>
                                 </a>
                               </span>
                           </li>
