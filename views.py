@@ -137,13 +137,12 @@ def order_delete(sid, oid):
     return redirect(url_for("session_edit", sid=sid))
 
 
-@app.route("/<int:sid>/order/<int:oid>/edit")
+@app.route("/<int:sid>/order/<int:oid>/edit", methods=['POST', 'GET'])
 @login_required
 def order_edit(sid, oid):
     order = OrderedItem[oid]
-    users = []
-    for uis in order.user_in_sessions:
-        users.append(uis.user)
+    sess = Session.get(id=sid)
+    users = select(uis.user for uis in UserInSession if uis.session == sess)[:]
     if request.method == "POST":
         nicknames = request.form.getlist('users')
         title = request.form.get('titleInput')
@@ -156,8 +155,8 @@ def order_edit(sid, oid):
             uis = UserInSession.get(user=User.get(nickname=nickname))
             if uis not in order.user_in_sessions:
                 order.user_in_sessions.add(uis)
+        return redirect(url_for('order_edit', sid=sess.id, oid=order.id))
     return render_template("order_edit.html", order=order, users=users)
-
 
 
 @app.route('/history', methods=['POST', 'GET'])

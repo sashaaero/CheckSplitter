@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block contents %}
+<ul class="list-group list-group-flush">
+    {% for history in user_history %}
+        <li class="list-group-item">
+            {{ Session.history}}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
