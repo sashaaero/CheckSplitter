@@ -41,16 +41,30 @@
                     <div class="form-group">
                         <div id="orders_list" class="list-group d-flex">
                           {% for order in orders %}
-                          <li class="list-group-item">
-                              {{ order.title }}
-                            <span class="float-right">
-                                <a href="{{ url_for("order_delete",sid=session.id, oid=order.id) }}">
-                                    <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
-                                        delete_forever
-                                      </i>
-                                </a>
-                              </span>
-                          </li>
+							<li class="list-group-item">
+							    {{ order[0].title }}
+								<span class="float-right">
+								<a href="{{ url_for("order_delete",sid=session.id, oid=order[0].id) }}">
+									<i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
+									   delete_forever
+									</i>
+								</a>
+								</span>
+                                <p></p>
+                                <div class="btn-group">
+                                    <a href="#" type="button" class="btn btn-primary btn-dark">
+                                       Редактировать
+                                    </a>
+                                    <button type="button" class="btn btn-primary btn-dark dropdown-toggle" data-toggle="dropdown">
+                                       Пользователи
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        {% for user in order[1]%}
+                                        <span class="dropdown-item-text">{{ user.nickname }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </li>
                           {% endfor %}
                           <a href="{{ url_for("order_new", sid=session.id) }}" type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">
                               Добавить блюдо

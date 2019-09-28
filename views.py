@@ -31,8 +31,15 @@ def session_edit(sid):
         return redirect(url_for('index'))
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
     users = select(u.user for u in session.users).order_by(lambda u: u.id)[:]
-    orders = session.orders
-    return render_template('session_edit.html', title=title, session=session, users=users, orders=orders)
+    # Code above creates list of tuples, where one tuple contains (current order оbject, users of this order).
+    ordersWithUsers = []
+    usersInOrder = []
+    for order in session.orders:
+        for uis in order.user_in_sessions:
+            usersInOrder.append(uis.user)
+        ordersWithUsers.append((order, usersInOrder))
+
+    return render_template('session_edit.html', title=title, session=session, users=users, orders=ordersWithUsers)
 
 
 @app.route('/session/<int:sid>/add_user')
@@ -121,6 +128,7 @@ def order_new(sid):
             order.user_in_sessions.add(uis)
         return redirect(url_for('order_new', sid=sess.id))
     return render_template('order_new.html', form=form, users=users)
+
 
 @app.route("/<int:sid>/order/<int:oid>/delete")
 @login_required
