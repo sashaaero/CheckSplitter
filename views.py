@@ -190,12 +190,11 @@ def check_credit():
                            user=current_user, masters=current_user.mastered_credits, slaves=current_user.slaved_credits)
 
 
-@app.route('/edit_credit', methods=['POST'])
+@app.route('/edit_credit/<int:id>', methods=['POST'])
 @login_required
-def edit_credit():
+def edit_credit(id):
     form = CreditForm()
-    credit_line_id = request.form['id']
-    user = Credit.get(id=credit_line_id)
+    user = Credit[id]
     return render_template('edit_credit.html', user=user, form=form)
 
 

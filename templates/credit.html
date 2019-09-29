@@ -1,74 +1,82 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %}
-  <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <!-- <strong>Title</strong> --> {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-<table class="table table-hover">
-    <tbody id="myTable">
-    {% if masters %}
-        <h2>Кто должен мне</h2>
-        {% for master in masters %}
-            <tr>
-                <td class="align-middle">
-                    {{ master.slave.nickname }}
-                </td>
-                <td class="align-middle">
-                    {{ master.value }}
-                </td>
-                <td class="align-middle">
-                    <form action="{{ url_for('edit_credit') }}" method="POST">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <div class="col-md-8">
-                            <button type="submit" class="btn" name="id" value="{{ master.id }}" >
-                                <i class="material-icons" style="color: #000000; cursor: pointer;font-size: 30px">create</i>
-                            </button>
-                        </div>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    {% else %}
-        <h2>Вам никто ничего не должен.</h2>
-    {% endif %}
-    </tbody>
-</table>
+{#{% with messages = get_flashed_messages(with_categories=true) %}#}
+{#  <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->#}
+{#  {% if messages %}#}
+{#    {% for category, message in messages %}#}
+{#      <div class="alert alert-{{ category }} alert-dismissible" role="alert">#}
+{#      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>#}
+{#      <!-- <strong>Title</strong> --> {{ message }}#}
+{#      </div>#}
+{#    {% endfor %}#}
+{#  {% endif %}#}
+{#{% endwith %}#}
+<div class="row">
+    <div class="col-md-6">
+        <h1>Долги</h1>
+        <ul class="nav nav-tabs" id="credit-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-item nav-link active" id="masters-tab" role="tab" aria-controls="masters" data-toggle="tab" href="#masters">Заёмщики</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-item nav-link" id="slaves-tab" role="tab" aria-controls="slaves" data-toggle="tab" href="#slaves">Кредиторы</a>
+            </li>
+        </ul>
 
-<table class="table table-hover">
-    <tbody id="myTable">
-    {% if slaves %}
-        <h2>Кому должен я</h2>
-        {% for slave in slaves %}
-            <tr>
-                <td class="align-middle">
-                    {{ slave.master.nickname }}
-                </td>
-                <td class="align-middle">
-                    {{ slave.value }}
-                </td>
-                <td class="align-middle">
-                    <form action="{{ url_for('edit_credit') }}" method="POST">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <div class="col-md-8">
-                            <button type="submit" class="btn" name="id" value="{{ slave.id }}">
-                                <i class="material-icons" style="color: #000000; cursor: pointer; font-size: 30px">create</i>
-                            </button>
-                        </div>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    {% else %}
-        <h2>Вы никому ничего не должны.</h2>
-    {% endif %}
-    </tbody>
-</table>
+        <div class="tab-content" id="credit-tab">
+            <div id="masters" class="tab-pane fade active show" role="tabpanel"  aria-labelledby="masters-tab">
+                <div class="form-group">
+                    <div id="masters-list" class="list-group d-flex">
+                        {% if masters %}
+                            {% for master in masters %}
+                            <li class="list-group-item">
+                                <h3>{{ master.slave.nickname }}</h3>
+                                <h3>{{ master.value }}</h3>
+                                <span class="float-right">
+                                    <a href="{{ url_for('edit_credit', mid=master.id) }}">
+                                        <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 30px;line-height: 1.4;">
+                                            create
+                                        </i>
+                                    </a>
+                                </span>
+                            </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item">
+                                <h4>Вам никто не должен.</h4>
+                            </li>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="slaves" class="tab-pane fade" role="tabpanel"  aria-labelledby="slaves-tab">
+                <div class="form-group">
+                    <div id="slaves-list" class="list-group d-flex">
+                        {% if slaves %}
+                            {% for slave in slaves %}
+                            <li class="list-group-item">
+                                <h3>{{ slave.master.nickname }}</h3>
+                                <h3>{{ slave.value }}</h3>
+                                <span class="float-right">
+                                    <a href="{{ url_for('edit_credit', mid=slave.id) }}">
+                                        <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 30px;line-height: 1.4;">
+                                            create
+                                        </i>
+                                    </a>
+                                </span>
+                            </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item">
+                                <h4>Вы ничего не должны.</h4>
+                            </li>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
