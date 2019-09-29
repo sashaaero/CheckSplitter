@@ -137,12 +137,20 @@ def order_delete(sid, oid):
     return redirect(url_for("session_edit", sid=sid))
 
 
-@app.route("/<int:sid>/order/<int:oid>/edit", methods=['POST', 'GET'])
+@app.route("/<int:sid>/order/<int:oid>/edit", methods=['GET','POST'])
 @login_required
 def order_edit(sid, oid):
+    session = Session[sid]
     order = OrderedItem[oid]
-    sess = Session.get(id=sid)
-    users = select(uis.user for uis in UserInSession if uis.session == sess)[:]
+    usersInOrder = []
+    # usersInOrder item is a tuple, where first element is User object, second element is a number 1 or 0,
+    # 0 means that this user not ordered item, 1 means opposite.
+    for uis in order.user_in_sessions:
+        usersInOrder.append((uis.user, 1))
+    for u in session.users:
+        if (u.user, 1) not in usersInOrder: # need to change
+            usersInOrder.append((u.user, 0))
+    usersInOrder = sorted(usersInOrder, key=lambda u: u[0].nickname)
     if request.method == "POST":
         nicknames = request.form.getlist('users')
         title = request.form.get('titleInput')
@@ -151,12 +159,20 @@ def order_edit(sid, oid):
             order.title = title
         if price != order.price:
             order.price = price
+        usersInForm = []
         for nickname in nicknames:
-            uis = UserInSession.get(user=User.get(nickname=nickname))
-            if uis not in order.user_in_sessions:
-                order.user_in_sessions.add(uis)
-        return redirect(url_for('order_edit', sid=sess.id, oid=order.id))
-    return render_template("order_edit.html", order=order, users=users)
+            # getting userInSession objects to list, via nicknames from form
+            usersInForm.append(UserInSession.get(user=User.get(nickname=nickname)))
+        for uis in order.user_in_sessions:
+            if uis not in usersInForm:
+                order.user_in_sessions.remove(uis)
+        for uif in usersInForm:
+            if uif not in order.user_in_sessions:
+                order.user_in_sessions.add(uif)
+        return redirect(url_for('order_edit', sid=sid, oid=oid))
+
+    return render_template("order_edit.html", order=order, usersInOrder=usersInOrder)
+
 
 
 @app.route('/history', methods=['POST', 'GET'])

@@ -8,18 +8,23 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             </div>
             <div class="form-group">
-                <input type="text" name="titleInput" id="titleInput" class="form-control" placeholder="{{ order.title }}">
+                <input type="text" name="titleInput" id="titleInput" class="form-control" value="{{ order.title }}">
             </div>
             <div class="form-group">
-                <input type="text" name="priceInput" id="priceInput" class="form-control" placeholder="{{ order.price }}">
+                <input type="text" name="priceInput" id="priceInput" class="form-control" value="{{ order.price }}">
             </div>
             <div class="form-group">
                 <label>Пользователи:</label>
                 <p></p>
                 <select class="selectpicker" multiple data-live-search="true" name="users">
-                    {% for user in users %}
-                        <option selected>{{ user.nickname }}</option>
+                    {% for user in usersInOrder %}
+                        {% if user[1] == 1 %}
+                        <option selected>{{ user[0].nickname }}</option>
+                        {% elif user[1] == 0 %}
+                        <option>{{ user[0].nickname }}</option>
+                        {% endif %}
                     {% endfor %}
+
                 </select>
             </div>
         <div>
