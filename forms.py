@@ -39,9 +39,9 @@ def pwd_match_check(form, field):
 		raise ValidationError('Wrong password. Try again. password')
 
 
-def check_credit_form(field):
+def check_credit_form(form, field):
 	from re import search
-	number = field.data
+	number = form.value.data
 	if search('^[0-9]{1,5}$', number) is None:
 		raise ValidationError('Введите корректную сумму.')
 
@@ -70,4 +70,4 @@ class OrderItem(Form):
 
 
 class CreditForm(Form):
-	value = StringField('Сумма', [InputRequired(), check_credit_form])
+	value = StringField('Сумма', [InputRequired(), check_credit_form ])
