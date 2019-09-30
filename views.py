@@ -15,6 +15,9 @@ def error_404(e):
 @app.route('/', methods=["POST", "GET"])
 @login_required
 def index():
+    curr_session = current_user.current_session
+    if curr_session:
+        return redirect(url_for('session_edit', sid=curr_session.id))
     return render_template('index.html', title='Главная')
 
 
@@ -31,7 +34,7 @@ def session_new():
 
 @app.route('/session/<int:sid>/')
 def session_edit(sid):
-    session = Session[sid]
+    session = Session.get(id=sid)
     if session is None:
         return render_template('404.html')
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
@@ -44,7 +47,6 @@ def session_edit(sid):
             users_in_order.append(uis.user)
         orders_with_users.append((order, users_in_order))
         users_in_order = []
-
     return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users)
 
 
@@ -62,8 +64,8 @@ def add_user(sid):
 
 @app.route('/session/<int:sid>/add_user/<int:uid>')
 def add_user_(sid, uid):
-    session = Session[sid]
-    user = User[uid]
+    session = Session.get(id=sid)
+    user = User.get(id=uid)
     if user is None or session is None:
         return render_template('404.html')
     check = UserInSession(session=session, user=user)
@@ -74,8 +76,8 @@ def add_user_(sid, uid):
 
 @app.route('/session/<int:sid>/delete_user/<int:uid>')
 def delete_user(sid, uid):
-    session = Session[sid]
-    user = User[uid]
+    session = Session.get(id=sid)
+    user = User.get(id=uid)
     if user is None or session is None:
         return render_template('404.html')
     check = UserInSession.get(session=session, user=user)
@@ -127,7 +129,7 @@ def logout():
 @login_required
 def order_new(sid):
     form = OrderItem(request.form)
-    sess = Session[sid]
+    sess = Session.get(id=sid)
     if sess is None:
         return render_template('404.html')
     users = select(uis.user for uis in UserInSession if uis.session == sess)[:]
@@ -146,7 +148,7 @@ def order_new(sid):
 @app.route("/<int:sid>/order/<int:oid>/delete")
 @login_required
 def order_delete(sid, oid):
-    item = OrderedItem[oid]
+    item = OrderedItem.get(id=oid)
     if item is None:
         return render_template('404.html')
     OrderedItem[oid].delete()
@@ -156,21 +158,13 @@ def order_delete(sid, oid):
 @app.route("/<int:sid>/order/<int:oid>/edit", methods=['GET','POST'])
 @login_required
 def order_edit(sid, oid):
-    session = Session[sid]
-    order = OrderedItem[oid]
+    session = Session.get(id=sid)
+    order = OrderedItem.get(id=oid)
     if None in (session, order):
         return render_template('404.html')
-    users_in_order = []
-    # usersInOrder item is a tuple, where first element is User object, second element is a number 1 or 0,
-    # 0 means that this user not ordered item, 1 means opposite.
-    for uis in order.user_in_sessions:
-        users_in_order.append((uis.user, 1))
-    for u in session.users:
-        if (u.user, 1) not in users_in_order: # need to change
-            users_in_order.append((u.user, 0))
-    users_in_order = sorted(users_in_order, key=lambda u: u[0].nickname)
+    users_in_order = list(order.user_in_sessions.user)
     if request.method == "POST":
-        fullnames = request.form.getlist('users')
+        fullnames = request.form.getlist('users')  # хуета, сделай айдишниками
         title = request.form.get('titleInput')
         price = int(request.form.get('priceInput'))
         if title != order.title:
@@ -190,6 +184,7 @@ def order_edit(sid, oid):
         return redirect(url_for('order_edit', sid=sid, oid=oid))
 
     return render_template("order_edit.html", order=order, usersInOrder=users_in_order)
+
 
 
 @app.route('/history', methods=['POST', 'GET'])
