@@ -2,31 +2,23 @@
 
 {% block content %}
 {% from "formhelpers.html" import render_field %}
-    <form method="POST">
-        <table class="table table-borderless">
-            <tbody class="sortable">
-                <tr>
-                    <td>
-                        <h4>Текущая задолженность: {{ user.value }}</h4>
-                    </td>
-                <tr>
-                    <td>
-                        <h4>Введите сумму, на которую изменился долг:</h4>
-                        {{ render_field(form.value) }}
-                        {% if 'value' in form.errors %}
-                            <small class="text-danger">{{ form.errors['value'][0] }}</small>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="d-flex justify-content-center">
-                        <button type="submit" class="btn" name="id" value="{{ user.id }}" >
-                            <i class="material-icons" style="color: gray; cursor: pointer; font-size: 60px;">check_circle</i>
-                        </button>
-                    </td>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                </tr>
-            </tbody>
-        </table>
+
+    <form action="{{ url_for('calculate') }}" method="POST">
+        <div class="d-flex justify-content-around">
+            Текущая задолженность: {{ user.value }}
+        </div>
+        <br>
+        <div class="d-flex justify-content-center">
+            {{ render_field(form.value) }}
+            {% if 'value' in form.errors %}
+                <small class="text-danger">{{ form.errors['value'][0] }}</small>
+            {% endif %}
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn" name="id" value="{{ user.id }}" >
+                <i class="material-icons" style="color: #000000; cursor: pointer; font-size: 60px;">check_circle</i>
+            </button>
+        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     </form>
 {% endblock %}

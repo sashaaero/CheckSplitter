@@ -211,23 +211,29 @@ def check_credit():
     )
 
 
-@app.route('/edit_credit/<int:uid>', methods=['GET', 'POST'])
+@app.route('/edit_credit/<int:id>', methods=['GET'])
 @login_required
-def edit_credit(uid):
-    form = CreditForm(request.form)
-    user = Credit[uid]
-    if request.method == "POST" and form.validate():
-        print('HElp')
-        # input_value = int(form.data['value'])
-        # cur_user_id = request.form['id']
-        # val = Credit[cur_user_id].value
-        # result = val - input_value
-        # if result > 0:
-        #     Credit[cur_user_id].value = result
-        # elif result == 0:
-        #     Credit[cur_user_id].delete()
-        # else:
-        #     flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
-        #     return redirect(url_for('check_credit'))
-        # return redirect(url_for('check_credit'))
+def edit_credit(id):
+    # Что тут вообще происходит?
+    form = CreditForm()
+    user = Credit[id]
     return render_template('edit_credit.html', user=user, form=form)
+
+
+@app.route('/calculate', methods=['POST'])
+@login_required
+def calculate():
+    # Что тут вообще происходит? 2
+    form = CreditForm(request.form)
+    input_value = int(form.data['value'])
+    cur_user_id = request.form['id']
+    val = Credit[cur_user_id].value
+    result = val - input_value
+    if result > 0:
+        Credit[cur_user_id].value = result
+    elif result == 0:
+        Credit[cur_user_id].delete()
+    else:
+        flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
+        return redirect(url_for('check_credit'))
+    return redirect(url_for('check_credit'))
