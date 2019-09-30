@@ -30,7 +30,7 @@
                                   </h3>
                           </li>
                           {% endfor %}
-                          <a href="{{ url_for("add_user",sid=session.id) }}" type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">
+                          <a href="{{ url_for('add_user',sid=session.id) }}" type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">
                               Добавить пользователя
                           </a>
                         </div>
@@ -46,7 +46,7 @@
                                     {{ order[0].title }}
                                 </a>
 								<span class="float-right">
-								<a href="{{ url_for("order_delete",sid=session.id, oid=order[0].id) }}">
+								<a href="{{ url_for('order_delete',sid=session.id, oid=order[0].id) }}">
 									<i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
 									   delete_forever
 									</i>
@@ -58,13 +58,13 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         {% for user in order[1]%}
-                                        <span class="dropdown-item-text">{{ user.nickname }}</span>
+                                        <span class="dropdown-item-text">{{ user.fullname }}</span>
                                         {% endfor %}
                                     </div>
                                 </div>
                             </li>
                           {% endfor %}
-                          <a href="{{ url_for("order_new", sid=session.id) }}" type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">
+                          <a href="{{ url_for('order_new', sid=session.id) }}" type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">
                               Добавить блюдо
                           </a>
                         <p></p>

@@ -20,7 +20,7 @@
                 <p></p>
                 <select class="selectpicker" multiple data-live-search="true" name="users">
                     {% for user in users %}
-                        <option>{{ user.nickname }}</option>
+                        <option>{{ user.fullname }}</option>
                     {% endfor %}
                 </select>
             </div>

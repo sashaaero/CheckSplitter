@@ -13,7 +13,7 @@
                 <select class="select-maintain custom-select mb-2" data-index="0" name="maintainer[]">
                     <option selected>Мэйнтейнер</option>
                     {% for user in users %}
-                    <option value={{ user.id }}> {{ user.nickname }}</option>
+                    <option value={{ user.id }}> {{ user.fullname }}</option>
                     {% endfor %}
                 </select>
                 <i class="material-icons mt-2 ml-2 delete-maintain" style="color: red; cursor: pointer;">
@@ -27,7 +27,7 @@
                 <select class="select-user custom-select mb-2" data-index="0" name="user[]">
                     <option selected>Пользователь</option>
                     {% for user in users %}
-                    <option value={{ user.id }}> {{ user.nickname }}</option>
+                    <option value={{ user.id }}> {{ user.fullname }}</option>
                     {% endfor %}
                 </select>
                 <i class="material-icons mt-2 ml-2 delete-user" style="color: red; cursor: pointer;">

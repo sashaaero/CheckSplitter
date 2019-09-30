@@ -31,7 +31,7 @@ def session_new():
 
 @app.route('/session/<int:sid>/')
 def session_edit(sid):
-    session = Session.get(id=sid)
+    session = Session[sid]
     if session is None:
         return render_template('404.html')
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
@@ -43,6 +43,7 @@ def session_edit(sid):
         for uis in order.user_in_sessions:
             users_in_order.append(uis.user)
         orders_with_users.append((order, users_in_order))
+        users_in_order = []
 
     return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users)
 
@@ -61,8 +62,8 @@ def add_user(sid):
 
 @app.route('/session/<int:sid>/add_user/<int:uid>')
 def add_user_(sid, uid):
-    session = Session.get(sid)
-    user = User.get(uid)
+    session = Session[sid]
+    user = User[uid]
     if user is None or session is None:
         return render_template('404.html')
     check = UserInSession(session=session, user=user)
@@ -73,8 +74,8 @@ def add_user_(sid, uid):
 
 @app.route('/session/<int:sid>/delete_user/<int:uid>')
 def delete_user(sid, uid):
-    session = Session.get(sid)
-    user = User.get(uid)
+    session = Session[sid]
+    user = User[uid]
     if user is None or session is None:
         return render_template('404.html')
     check = UserInSession.get(session=session, user=user)
@@ -93,7 +94,9 @@ def delete_user(sid, uid):
 def reg():
     form = RegForm(request.form)
     if request.method == 'POST' and form.validate():
-        User(nickname=form.data['nickname'], fullname=form.data['fullname'], password=form.data['pwd1'])
+        User(nickname=form.data['nickname'],
+             fullname=form.data['fullname'],
+             password=form.data['pwd1'])
         return redirect(url_for('index'))
     return render_template('reg.html', form=form)
 
@@ -124,17 +127,17 @@ def logout():
 @login_required
 def order_new(sid):
     form = OrderItem(request.form)
-    sess = Session.get(id=sid)
+    sess = Session[sid]
     if sess is None:
         return render_template('404.html')
     users = select(uis.user for uis in UserInSession if uis.session == sess)[:]
     if request.method == 'POST' and form.validate():
-        nicknames = request.form.getlist('users')
+        fullnames = request.form.getlist('users')
         order = OrderedItem(title=form.data['title'],
                             price=form.data['price'],
                             session=sess)
-        for nickname in nicknames:
-            uis = UserInSession.get(user=User.get(nickname=nickname))
+        for fullname in fullnames:
+            uis = UserInSession.get(user=User.get(fullname=fullname))
             order.user_in_sessions.add(uis)
         return redirect(url_for('order_new', sid=sess.id))
     return render_template('order_new.html', form=form, users=users)
@@ -143,7 +146,7 @@ def order_new(sid):
 @app.route("/<int:sid>/order/<int:oid>/delete")
 @login_required
 def order_delete(sid, oid):
-    item = OrderedItem.get(oid)
+    item = OrderedItem[oid]
     if item is None:
         return render_template('404.html')
     OrderedItem[oid].delete()
@@ -153,8 +156,8 @@ def order_delete(sid, oid):
 @app.route("/<int:sid>/order/<int:oid>/edit", methods=['GET','POST'])
 @login_required
 def order_edit(sid, oid):
-    session = Session.get(sid)
-    order = OrderedItem.get(oid)
+    session = Session[sid]
+    order = OrderedItem[oid]
     if None in (session, order):
         return render_template('404.html')
     users_in_order = []
@@ -167,7 +170,7 @@ def order_edit(sid, oid):
             users_in_order.append((u.user, 0))
     users_in_order = sorted(users_in_order, key=lambda u: u[0].nickname)
     if request.method == "POST":
-        nicknames = request.form.getlist('users')
+        fullnames = request.form.getlist('users')
         title = request.form.get('titleInput')
         price = int(request.form.get('priceInput'))
         if title != order.title:
@@ -175,9 +178,9 @@ def order_edit(sid, oid):
         if price != order.price:
             order.price = price
         users_in_form = []
-        for nickname in nicknames:
+        for fullname in fullnames:
             # getting userInSession objects to list, via nicknames from form
-            users_in_form.append(UserInSession.get(user=User.get(nickname=nickname)))
+            users_in_form.append(UserInSession.get(user=User.get(fullname=fullname)))
         for uis in order.user_in_sessions:
             if uis not in users_in_form:
                 order.user_in_sessions.remove(uis)
@@ -187,7 +190,6 @@ def order_edit(sid, oid):
         return redirect(url_for('order_edit', sid=sid, oid=oid))
 
     return render_template("order_edit.html", order=order, usersInOrder=users_in_order)
-
 
 
 @app.route('/history', methods=['POST', 'GET'])
