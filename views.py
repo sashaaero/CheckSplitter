@@ -190,7 +190,7 @@ def check_credit():
                            user=current_user, masters=current_user.mastered_credits, slaves=current_user.slaved_credits)
 
 
-@app.route('/edit_credit/<int:id>', methods=['POST'])
+@app.route('/edit_credit/<int:id>', methods=['GET'])
 @login_required
 def edit_credit(id):
     form = CreditForm()
