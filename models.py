@@ -14,6 +14,8 @@ class User(db.Entity, UserMixin):
     mastered_credits = Set('Credit', reverse='master')
     slaved_credits = Set('Credit', reverse='slave')
     sessions = Set('UserInSession')
+    credit_editions = Set('CreditEdition', reverse='user')
+    affected_editions = Set('CreditEdition', reverse='affected_user')
 
     @property
     def virtual(self):
@@ -49,6 +51,7 @@ class Credit(db.Entity):
     master = Required(User, reverse='mastered_credits')
     slave = Required(User, reverse='slaved_credits')
     value = Optional(int)
+    credit_editions = Set('CreditEdition')
 
 
 class UserInSession(db.Entity):
@@ -57,3 +60,12 @@ class UserInSession(db.Entity):
     value = Required(int, default=0)
     session = Required(Session)
     orders = Set(OrderedItem)
+
+
+class CreditEdition(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    user = Required(User, reverse='credit_editions')
+    credit = Required(Credit)
+    old_value = Required(int)
+    new_value = Required(int)
+    affected_user = Required(User, reverse='affected_editions')
