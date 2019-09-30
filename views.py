@@ -7,6 +7,11 @@ from flask import render_template, request, flash, redirect, url_for
 from datetime import datetime
 
 
+@app.errorhandler(404)
+def error_404(e):
+    return render_template('404.html'), 404
+
+
 @app.route('/', methods=["POST", "GET"])
 @login_required
 def index():
@@ -28,18 +33,18 @@ def session_new():
 def session_edit(sid):
     session = Session.get(id=sid)
     if session is None:
-        return redirect(url_for('index'))
+        return render_template('404.html')
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
     users = select(u.user for u in session.users).order_by(lambda u: u.id)[:]
     # Code above creates list of tuples, where one tuple contains (current order оbject, users of this order).
-    ordersWithUsers = []
-    usersInOrder = []
+    orders_with_users = []
+    users_in_order = []
     for order in session.orders:
         for uis in order.user_in_sessions:
-            usersInOrder.append(uis.user)
-        ordersWithUsers.append((order, usersInOrder))
+            users_in_order.append(uis.user)
+        orders_with_users.append((order, users_in_order))
 
-    return render_template('session_edit.html', title=title, session=session, users=users, orders=ordersWithUsers)
+    return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users)
 
 
 @app.route('/session/<int:sid>/add_user')
@@ -51,13 +56,15 @@ def add_user(sid):
         users_list.append({
             'id': u.id, 'fullname': u.fullname, 'login': u.nickname
         })
-    return render_template('add_user.html', cuser=current_user, users=users_list, session=session   )
+    return render_template('add_user.html', cuser=current_user, users=users_list, session=session)
 
 
 @app.route('/session/<int:sid>/add_user/<int:uid>')
 def add_user_(sid, uid):
-    session = Session[sid]
-    user = User[uid]
+    session = Session.get(sid)
+    user = User.get(uid)
+    if user is None or session is None:
+        return render_template('404.html')
     check = UserInSession(session=session, user=user)
     if check is None:  # TODO add error to logs
         UserInSession(session=session, user=user)
@@ -66,8 +73,10 @@ def add_user_(sid, uid):
 
 @app.route('/session/<int:sid>/delete_user/<int:uid>')
 def delete_user(sid, uid):
-    session = Session[sid]
-    user = User[uid]
+    session = Session.get(sid)
+    user = User.get(uid)
+    if user is None or session is None:
+        return render_template('404.html')
     check = UserInSession.get(session=session, user=user)
     if check is None:
         pass  # TODO add error to logs
@@ -78,7 +87,6 @@ def delete_user(sid, uid):
         return redirect(url_for('session_edit', sid=sid))
     session.delete()
     return redirect(url_for('index'))
-
 
 
 @app.route('/reg', methods=['POST', 'GET'])
@@ -117,6 +125,8 @@ def logout():
 def order_new(sid):
     form = OrderItem(request.form)
     sess = Session.get(id=sid)
+    if sess is None:
+        return render_template('404.html')
     users = select(uis.user for uis in UserInSession if uis.session == sess)[:]
     if request.method == 'POST' and form.validate():
         nicknames = request.form.getlist('users')
@@ -133,6 +143,9 @@ def order_new(sid):
 @app.route("/<int:sid>/order/<int:oid>/delete")
 @login_required
 def order_delete(sid, oid):
+    item = OrderedItem.get(oid)
+    if item is None:
+        return render_template('404.html')
     OrderedItem[oid].delete()
     return redirect(url_for("session_edit", sid=sid))
 
@@ -140,17 +153,19 @@ def order_delete(sid, oid):
 @app.route("/<int:sid>/order/<int:oid>/edit", methods=['GET','POST'])
 @login_required
 def order_edit(sid, oid):
-    session = Session[sid]
-    order = OrderedItem[oid]
-    usersInOrder = []
+    session = Session.get(sid)
+    order = OrderedItem.get(oid)
+    if None in (session, order):
+        return render_template('404.html')
+    users_in_order = []
     # usersInOrder item is a tuple, where first element is User object, second element is a number 1 or 0,
     # 0 means that this user not ordered item, 1 means opposite.
     for uis in order.user_in_sessions:
-        usersInOrder.append((uis.user, 1))
+        users_in_order.append((uis.user, 1))
     for u in session.users:
-        if (u.user, 1) not in usersInOrder: # need to change
-            usersInOrder.append((u.user, 0))
-    usersInOrder = sorted(usersInOrder, key=lambda u: u[0].nickname)
+        if (u.user, 1) not in users_in_order: # need to change
+            users_in_order.append((u.user, 0))
+    users_in_order = sorted(users_in_order, key=lambda u: u[0].nickname)
     if request.method == "POST":
         nicknames = request.form.getlist('users')
         title = request.form.get('titleInput')
@@ -159,19 +174,19 @@ def order_edit(sid, oid):
             order.title = title
         if price != order.price:
             order.price = price
-        usersInForm = []
+        users_in_form = []
         for nickname in nicknames:
             # getting userInSession objects to list, via nicknames from form
-            usersInForm.append(UserInSession.get(user=User.get(nickname=nickname)))
+            users_in_form.append(UserInSession.get(user=User.get(nickname=nickname)))
         for uis in order.user_in_sessions:
-            if uis not in usersInForm:
+            if uis not in users_in_form:
                 order.user_in_sessions.remove(uis)
-        for uif in usersInForm:
+        for uif in users_in_form:
             if uif not in order.user_in_sessions:
                 order.user_in_sessions.add(uif)
         return redirect(url_for('order_edit', sid=sid, oid=oid))
 
-    return render_template("order_edit.html", order=order, usersInOrder=usersInOrder)
+    return render_template("order_edit.html", order=order, usersInOrder=users_in_order)
 
 
 
@@ -186,13 +201,18 @@ def history():
 @app.route('/credit')
 @login_required
 def check_credit():
-    return render_template('credit.html',
-                           user=current_user, masters=current_user.mastered_credits, slaves=current_user.slaved_credits)
+    return render_template(
+        'credit.html',
+        user=current_user,
+        masters=current_user.mastered_credits,
+        slaves=current_user.slaved_credits
+    )
 
 
 @app.route('/edit_credit/<int:id>', methods=['GET'])
 @login_required
 def edit_credit(id):
+    # Что тут вообще происходит?
     form = CreditForm()
     user = Credit[id]
     return render_template('edit_credit.html', user=user, form=form)
@@ -201,6 +221,7 @@ def edit_credit(id):
 @app.route('/calculate', methods=['POST'])
 @login_required
 def calculate():
+    # Что тут вообще происходит? 2
     form = CreditForm(request.form)
     input_value = int(form.data['value'])
     cur_user_id = request.form['id']
