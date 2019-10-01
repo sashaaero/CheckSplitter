@@ -186,7 +186,6 @@ def order_edit(sid, oid):
     return render_template("order_edit.html", order=order, usersInOrder=users_in_order)
 
 
-
 @app.route('/history', methods=['POST', 'GET'])
 @login_required
 def history():
@@ -198,11 +197,32 @@ def history():
 @app.route('/credit')
 @login_required
 def check_credit():
+    masters = current_user.mastered_credits
+    slaves = current_user.slaved_credits
+    '''
+    Проверка случаев, когда:
+    1)ты должен пользователю n, он тебе n;
+    2)Пользователь должен тебе m, ты ему n, m > n
+    3)Пользователь должен тебе m, ты ему n, m < n
+    '''
+    for m_credit in masters:
+        for s_credit in slaves:
+            # поиск строк, где current_user является мастером и слэйвом
+            if m_credit.slave.id == s_credit.master.id:
+                # m > n, соответственно долг cur_user убирается, долг cur_userУ уменьшается на s_credit.value
+                if m_credit.value > s_credit.value:
+                    Credit[s_credit.id].delete()
+                    Credit[m_credit.id].value = m_credit.value - s_credit.value
+                # m < n, соответственно долг cur_userУ убирается, долг cur_user уменьшается на m_credit.value
+                elif m_credit.value < s_credit.value:
+                    Credit[m_credit.id].delete()
+                    Credit[s_credit.id].value = s_credit.value - m_credit.value
+                # m = n, никто никому не должен
+                elif m_credit.value == s_credit.value:
+                    Credit[m_credit.id].delete()
+                    Credit[s_credit.id].delete()
     return render_template(
-        'credit.html',
-        user=current_user,
-        masters=current_user.mastered_credits,
-        slaves=current_user.slaved_credits
+        'credit.html', user=current_user, masters=masters, slaves=slaves
     )
 
 
@@ -221,5 +241,6 @@ def edit_credit(uid):
             Credit[uid].delete()
         else:
             flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'error')
+            return redirect(url_for('edit_credit', uid=uid))
         return redirect(url_for('check_credit'))
     return render_template('edit_credit.html', user=user, form=form)
