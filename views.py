@@ -212,17 +212,14 @@ def edit_credit(uid):
     form = CreditForm(request.form)
     user = Credit[uid]
     if request.method == "POST" and form.validate():
-        print('HElp')
-        # input_value = int(form.data['value'])
-        # cur_user_id = request.form['id']
-        # val = Credit[cur_user_id].value
-        # result = val - input_value
-        # if result > 0:
-        #     Credit[cur_user_id].value = result
-        # elif result == 0:
-        #     Credit[cur_user_id].delete()
-        # else:
-        #     flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'warning')
-        #     return redirect(url_for('check_credit'))
-        # return redirect(url_for('check_credit'))
+        input_value = int(form.value.data)
+        val = Credit[uid].value
+        result = val - input_value
+        if result > 0:
+            Credit[uid].value = result
+        elif result == 0:
+            Credit[uid].delete()
+        else:
+            flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'error')
+        return redirect(url_for('check_credit'))
     return render_template('edit_credit.html', user=user, form=form)
