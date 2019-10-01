@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row d-flex justify-content-center">
+        <h2>История переводов</h2>
+    </div>
+    <h3>Переводы заёмщиков</h3>
+    {% if user_history %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Пользователь</th>
+                    <th scope="col">Старое значение</th>
+                    <th scope="col">Новое значение</th>
+                </tr>
+            </thead>
+            <tbody class="sortable">
+            {% for edition in user_history %}
+                <tr>
+                    <td>
+                        <h4>{{edition.affected_user.fullname}}</h4>
+                    </td>
+                    <td>
+                        <h4>{{edition.old_value}}</h4>
+                    </td>
+                    <td>
+                        <h4>{{edition.new_value}}</h4>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <table class="table table-hover">
+            <tbody>
+                <tr class="row d-flex justify-content-center">
+                    <td><h3>Не найдено</h3></td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+
+    <h3>Переводы кредиторам</h3>
+    {% if affected_history %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Пользователь</th>
+                    <th scope="col">Старое значение</th>
+                    <th scope="col">Новое значение</th>
+                </tr>
+            </thead>
+            <tbody class="sortable">
+            {% for edition in affected_history %}
+                <tr>
+                    <td>
+                        <h4>{{edition.user.fullname}}</h4>
+                    </td>
+                    <td>
+                        <h4>{{edition.old_value}}</h4>
+                    </td>
+                    <td>
+                        <h4>{{edition.new_value}}</h4>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <table class="table table-hover">
+            <tbody>
+                <tr class="row d-flex justify-content-center">
+                    <td><h3>Не найдено</h3></td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

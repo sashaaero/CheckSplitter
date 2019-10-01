@@ -221,26 +221,40 @@ def check_credit():
                 elif m_credit.value == s_credit.value:
                     Credit[m_credit.id].delete()
                     Credit[s_credit.id].delete()
-    return render_template(
-        'credit.html', user=current_user, masters=masters, slaves=slaves
-    )
+    return render_template('credit.html', user=current_user, masters=masters, slaves=slaves)
 
 
 @app.route('/edit_credit/<int:uid>', methods=['GET', 'POST'])
 @login_required
 def edit_credit(uid):
     form = CreditForm(request.form)
-    user = Credit[uid]
+    cur_row = Credit[uid]
     if request.method == "POST" and form.validate():
         input_value = int(form.value.data)
-        val = Credit[uid].value
+        val = cur_row.value
         result = val - input_value
         if result > 0:
-            Credit[uid].value = result
+            cur_row.value = result
+            CreditEdition(user=cur_row.master.id, affected_user=cur_row.slave.id, credit=uid, old_value=val,
+                          new_value=result)
         elif result == 0:
-            Credit[uid].delete()
+            # Ситуация, когда юзер погашает долг пока не заносится в бд
+            # ибо при погашении долга удаляется соответствующая запись из таблицы Credit
+            # и не получается прокинуть к ней ссылку из CreditEdition
+            # CreditEdition(user=cur_row.master.id, affected_user=cur_row.slave.id, credit=None, old_value=val, new_value=result)
+            cur_row.delete()
         else:
             flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'error')
             return redirect(url_for('edit_credit', uid=uid))
         return redirect(url_for('check_credit'))
-    return render_template('edit_credit.html', user=user, form=form)
+    return render_template('edit_credit.html', user=cur_row, form=form)
+
+
+@app.route('/credit_history', methods=['GET', 'POST'])
+@login_required
+def credit_history():
+    return render_template(
+        'credit_history.html',
+        user_history=current_user.credit_editions,
+        affected_history=current_user.affected_editions
+        )
