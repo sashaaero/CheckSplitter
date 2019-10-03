@@ -1,6 +1,7 @@
 from wtforms import *
 from wtforms.validators import *
 from models import *
+from werkzeug.security import check_password_hash
 
 
 def nickname_free(form, field):
@@ -33,10 +34,10 @@ def nickname_check(form, field):
 def pwd_match_check(form, field):
     nickname = form.nickname.data
     pwd = field.data
-    check = User.get(nickname=nickname, password=pwd)
-    user = User.get(nickname=form.data['nickname'])
-    if check is None:
-        raise ValidationError('Wrong password. Try again. password')
+    user = User.get(nickname=nickname)
+    if user:
+        if not check_password_hash(user.password, pwd):
+            raise ValidationError('Wrong password. Try again. password')
 
 
 def check_credit_form(form, field):

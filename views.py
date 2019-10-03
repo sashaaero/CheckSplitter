@@ -4,6 +4,7 @@ from models import *
 from forms import RegForm, LoginForm, OrderItem, CreditForm
 from pony.orm import select, commit, flush, desc, sql_debug
 from flask import render_template, request, flash, redirect, url_for
+from werkzeug.security import generate_password_hash
 from datetime import datetime
 
 
@@ -98,7 +99,7 @@ def reg():
     if request.method == 'POST' and form.validate():
         User(nickname=form.data['nickname'],
              fullname=form.data['fullname'],
-             password=form.data['pwd1'])
+             password=generate_password_hash(form.data['pwd1']))
         return redirect(url_for('index'))
     return render_template('reg.html', form=form)
 
@@ -110,9 +111,6 @@ def login():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         user = User.get(nickname=form.data['nickname'])
-        pwd = form.data['pwd']
-        if user.password != pwd:
-            return 'Incorrect password'
         login_user(user)
         return redirect(url_for('index'))
     return render_template('login.html', form=form, title='Вход')
