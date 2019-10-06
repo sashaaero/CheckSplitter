@@ -161,8 +161,9 @@ def order_edit(sid, oid):
     if None in (session, order):
         return render_template('404.html')
     users_in_order = list(order.user_in_sessions.user)
+    users_not_in_order = list(set(session.users.user).difference(users_in_order))
     if request.method == "POST":
-        fullnames = request.form.getlist('users')  # хуета, сделай айдишниками
+        ids = request.form.getlist('users')
         title = request.form.get('titleInput')
         price = int(request.form.get('priceInput'))
         if title != order.title:
@@ -170,9 +171,9 @@ def order_edit(sid, oid):
         if price != order.price:
             order.price = price
         users_in_form = []
-        for fullname in fullnames:
-            # getting userInSession objects to list, via nicknames from form
-            users_in_form.append(UserInSession.get(user=User.get(fullname=fullname)))
+        for id in ids:
+            # getting userInSession objects to list, via user ids from dropdown
+            users_in_form.append(UserInSession.get(user=User[id]))
         for uis in order.user_in_sessions:
             if uis not in users_in_form:
                 order.user_in_sessions.remove(uis)
@@ -181,7 +182,8 @@ def order_edit(sid, oid):
                 order.user_in_sessions.add(uif)
         return redirect(url_for('order_edit', sid=sid, oid=oid))
 
-    return render_template("order_edit.html", order=order, usersInOrder=users_in_order)
+    return render_template("order_edit.html", order=order, users_in_order=users_in_order,
+                           users_not_in_order=users_not_in_order)
 
 
 @app.route('/history', methods=['POST', 'GET'])

@@ -16,15 +16,13 @@
             <div class="form-group">
                 <label>Пользователи:</label>
                 <p></p>
-                <select class="selectpicker" multiple data-live-search="true" name="usersInOrder">
-                    {% for user in usersInOrder %}
-                        {% if user[1] == 1 %}
-                        <option selected>{{ user[0].fullname }}</option>
-                        {% elif user[1] == 0 %}
-                        <option>{{ user[0].fullname }}</option>
-                        {% endif %}
+                <select class="selectpicker" multiple data-live-search="true" name="users">
+                    {% for user in users_in_order %}
+                        <option selected value="{{ user.id }}">{{ user.fullname }}</option>
                     {% endfor %}
-
+                    {% for user in users_not_in_order %}
+                        <option value="{{ user.id }}">{{ user.fullname }}</option>
+                    {% endfor %}
                 </select>
             </div>
         <div>
