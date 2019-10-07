@@ -5,6 +5,7 @@ from forms import RegForm, LoginForm, OrderItem, CreditForm
 from pony.orm import select, commit, flush, desc, sql_debug
 from flask import render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash
+from flask_cors import cross_origin
 from datetime import datetime
 
 
@@ -39,7 +40,7 @@ def session_edit(sid):
     if session is None:
         return render_template('404.html')
     title = 'Сессия %s' % (session.title if session.title is not None else str(session.id))
-    users = select(u.user for u in session.users).order_by(lambda u: u.id)[:]
+    users = select(u for u in session.users).order_by(lambda u: u.id)[:]
     # Code above creates list of tuples, where one tuple contains (current order оbject, users of this order).
     orders_with_users = []
     users_in_order = []
@@ -48,8 +49,22 @@ def session_edit(sid):
             users_in_order.append(uis.user)
         orders_with_users.append((order, users_in_order))
         users_in_order = []
-    return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users)
+    return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users,
+                           cuser=current_user)
 
+
+@app.route('/session/<int:sid>/add_money', methods=["POST"])
+@cross_origin(methods=["POST"])
+def add_money(sid):
+    data = request.get_json()
+    if "amount" in data.keys():
+        session = Session[sid]
+        user = User[data["uid"]]
+        uis = UserInSession.get(session=session, user=user)
+        uis.value = int(data["amount"])
+        return redirect(url_for("session_edit", sid=sid))
+    else:
+        return redirect(url_for("session_edit", sid=sid))
 
 @app.route('/session/<int:sid>/add_user')
 def add_user(sid):
