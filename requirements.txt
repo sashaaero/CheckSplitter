@@ -8,3 +8,4 @@ MarkupSafe==1.1.1
 pony==0.7.10
 Werkzeug==0.15.5
 WTForms==2.2.1
+Flask-Cors==3.0.8
