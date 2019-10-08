@@ -49,6 +49,9 @@ def session_edit(sid):
             users_in_order.append(uis.user)
         orders_with_users.append((order, users_in_order))
         users_in_order = []
+
+    if request.method == "POST":
+        pass
     return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users,
                            cuser=current_user)
 
