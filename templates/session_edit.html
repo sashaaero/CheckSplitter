@@ -4,13 +4,6 @@
     <div class="row">
         <div class="col-md-6">
             <h3>Редактирование сессии:</h3>
-            <div class="form-group">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <h5>Внести сумму:</h5>
-                <input id="money" type="text" class="form-control">
-                <p></p>
-                <button id="set_money" name="create" class="btn btn-dark btn-block">Изменить</button>
-            </div>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-item nav-link active" id="users-tab" role="tab" aria-controls="users" data-toggle="tab" href="#users">Пользователи</a>
@@ -22,19 +15,25 @@
             <div class="tab-content" id="myTabContent">
                 <div id="users" class="tab-pane fade active show" role="tabpanel"  aria-labelledby="users-tab">
                     <div class="form-group">
-                        <div id="user_list" class="list-group d-flex">
+                        <div id="user_list" class="list-group">
                           {% for uis in users %}
                           <li class="list-group-item">
-                              <h3>{{ uis.user.fullname }}
-                                  Сумма: {{ uis.value }}
-                              <span class="float-right">
-                                  <a href="{{ url_for('delete_user', sid=session.id, uid=uis.user.id) }}">
-                                      <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
-                                        delete_forever
-                                      </i>
-                                  </a>
-                              </span>
-                              </h3>
+                              <div class="row d-flex align-items-center">
+                                  <div class="col-7 text-truncate">{{ uis.user.fullname }}</div>
+                                  <div class="col-3">
+                                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                      <input id="money" type="text" class="form-control">
+                                  </div>
+                                  <div class="col-xs-2 ml-1">
+                                      <span class="float-right">
+                                          <a href="{{ url_for('delete_user', sid=session.id, uid=uis.user.id) }}">
+                                              <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 32px;line-height: 1.4;">
+                                               delete_forever
+                                              </i>
+                                          </a>
+                                      </span>
+                                  </div>
+                              </div>
                           </li>
                           {% endfor %}
                           <a href="{{ url_for('add_user',sid=session.id) }}" type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">
