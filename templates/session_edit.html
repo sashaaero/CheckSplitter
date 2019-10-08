@@ -93,18 +93,16 @@
        }
        function sent_money(uid){
            let sum = document.getElementById("money" + uid).value;
-           if (!isNaN(sum)){
-               let config = { headers: {
-                      'Content-Type': 'application/json',
-                      'Access-Control-Allow-Origin': '*'}
-               };
-               axios.defaults.headers.common['X-CSRF-TOKEN'] = "{{ csrf_token() }}";
-               axios.post('/session/{{ session.id }}/add_money',{
-                   uid: uid,
-                   amount: sum,
-               }, config)
-               document.getElementById("save_button" + uid).setAttribute("disabled", "disabled");
-           }
+           let config = { headers: {
+                  'Content-Type': 'application/json',
+                  'Access-Control-Allow-Origin': '*'}
+           };
+           axios.defaults.headers.common['X-CSRF-TOKEN'] = "{{ csrf_token() }}";
+           axios.post('/session/{{ session.id }}/add_money',{
+               uid: uid,
+               amount: sum,
+           }, config)
+           document.getElementById("save_button" + uid).setAttribute("disabled", "disabled");
        }
     </script>
 
