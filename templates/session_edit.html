@@ -21,10 +21,10 @@
                               <div class="row d-flex align-items-center">
                                   <div class="col-7 text-truncate">{{ uis.user.fullname }}</div>
                                   <div class="col-3 pr-1">
-                                      <input id="money{{ uis.user.id }}" type="text" class="form-control" onchange="enableButton({{ uis.user.id }})" value="{{ uis.value }}" name="money[]">
+                                      <input id="money{{ uis.user.id }}" type="number" class="form-control" onchange="enableButton({{ uis.user.id }})" value="{{ uis.value }}" name="money[]">
                                   </div>
                                   <div class="col-1 pl-1">
-                                      <button id="save_button{{ uis.user.id }}" type="submit"  class="btn btn-dark btn-block d-flex justify-content-center" disabled>
+                                      <button id="save_button{{ uis.user.id }}" class="btn btn-dark btn-block d-flex justify-content-center" disabled onclick="sent_money({{ uis.user.id }})">
                                           <i class="material-icons" style="color: darkgray; cursor: pointer;font-size: 18px;line-height: 1.4;">
                                                save
                                           </i>
@@ -86,9 +86,24 @@
     </div>
     <script>
        function enableButton(uid) {
-           var button = document.getElementById("save_button" + uid)
+           let button = document.getElementById("save_button" + uid);
            if (button.hasAttribute("disabled")){
                button.removeAttribute("disabled")
+           }
+       }
+       function sent_money(uid){
+           let sum = document.getElementById("money" + uid).value;
+           if (!isNaN(sum)){
+               let config = { headers: {
+                      'Content-Type': 'application/json',
+                      'Access-Control-Allow-Origin': '*'}
+               };
+               axios.defaults.headers.common['X-CSRF-TOKEN'] = "{{ csrf_token() }}";
+               axios.post('/session/{{ session.id }}/add_money',{
+                   uid: uid,
+                   amount: sum,
+               }, config)
+               document.getElementById("save_button" + uid).setAttribute("disabled", "disabled");
            }
        }
     </script>
