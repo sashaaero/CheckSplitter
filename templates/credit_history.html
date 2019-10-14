@@ -17,30 +17,22 @@
                 <div class="form-group">
                     <div id="users-list" class="list-group">
                         {% if user_history %}
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Пользователь</th>
-                                        <th scope="col">Было</th>
-                                        <th scope="col">Стало</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="sortable">
+                            <li class="list-group-item">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-6"><b>Пользователь</b></div>
+                                    <div class="col-3"><b>Было</b></div>
+                                    <div class="col-3"><b>Стало</b></div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
                                 {% for edition in user_history %}
-                                    <tr>
-                                        <td>
-                                            <h4>{{edition.affected_user.fullname}}</h4>
-                                        </td>
-                                        <td>
-                                            <h4>{{edition.old_value}}</h4>
-                                        </td>
-                                        <td>
-                                            <h4>{{edition.new_value}}</h4>
-                                        </td>
-                                    </tr>
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-6 text-truncate">{{edition.affected_user.fullname}}</div>
+                                        <div class="col-3 text-center">{{edition.old_value}}</div>
+                                        <div class="col-3 text-center">{{edition.new_value}}</div>
+                                    </div>
                                 {% endfor %}
-                                </tbody>
-                            </table>
+                            </li>
                         {% else %}
                             <li class="list-group-item">
                                 <h4>Не найдено</h4>
@@ -54,30 +46,22 @@
                 <div class="form-group">
                     <div id="affected-list" class="list-group d-flex">
                         {% if affected_history %}
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Пользователь</th>
-                                        <th scope="col">Было</th>
-                                        <th scope="col">Стало</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="sortable">
+                            <li class="list-group-item">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-6"><b>Пользователь</b></div>
+                                    <div class="col-3"><b>Было</b></div>
+                                    <div class="col-3"><b>Стало</b></div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
                                 {% for edition in affected_history %}
-                                    <tr>
-                                        <td>
-                                            <h4>{{edition.user.fullname}}</h4>
-                                        </td>
-                                        <td>
-                                            <h4>{{edition.old_value}}</h4>
-                                        </td>
-                                        <td>
-                                            <h4>{{edition.new_value}}</h4>
-                                        </td>
-                                    </tr>
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-6 text-truncate">{{edition.user.fullname}}</div>
+                                        <div class="col-3 text-center">{{edition.old_value}}</div>
+                                        <div class="col-3 text-center">{{edition.new_value}}</div>
+                                    </div>
                                 {% endfor %}
-                                </tbody>
-                            </table>
+                            </li>
                         {% else %}
                             <li class="list-group-item">
                                 <h4>Не найдено</h4>

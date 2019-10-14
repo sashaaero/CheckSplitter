@@ -20,18 +20,10 @@
                         {% if masters.master %}
                             {% for m_credit in masters %}
                             <li class="list-group-item">
-                                <table class="table table-hover">
-                                    <tbody id="slaves_t" class="sortable">
-                                        <tr onclick="document.location='{{ url_for('edit_credit', uid=m_credit.id) }}';">
-                                            <td>
-                                                <h4>{{ m_credit.slave.fullname }}</h4>
-                                            </td>
-                                            <td>
-                                                <h4>{{ m_credit.value }}</h4>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="row d-flex align-items-center" onclick="document.location='{{ url_for('edit_credit', uid=m_credit.id) }}';">
+                                    <div class="col-9 text-truncate">{{ m_credit.slave.fullname }}</div>
+                                    <div class="col-3">{{ m_credit.value }}</div>
+                                 </div>
                             </li>
                             {% endfor %}
                         {% else %}
@@ -49,18 +41,10 @@
                         {% if slaves %}
                             {% for s_credit in slaves %}
                             <li class="list-group-item">
-                                <table class="table table-hover">
-                                    <tbody id="slaves_t" class="sortable">
-                                        <tr onclick="document.location='{{ url_for('edit_credit', uid=s_credit.id) }}';">
-                                            <td>
-                                                <h4>{{ s_credit.master.fullname }}</h4>
-                                            </td>
-                                            <td>
-                                                <h4>{{ s_credit.value }}</h4>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="row d-flex align-items-center" onclick="document.location='{{ url_for('edit_credit', uid=s_credit.id) }}';">
+                                    <div class="col-9 text-truncate">{{ s_credit.master.fullname }}</div>
+                                    <div class="col-3">{{ s_credit.value }}</div>
+                                 </div>
                             </li>
                             {% endfor %}
                         {% else %}
