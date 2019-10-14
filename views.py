@@ -35,6 +35,7 @@ def session_new():
 
 
 @app.route('/session/<int:sid>/')
+@login_required
 def session_edit(sid):
     session = Session.get(id=sid)
     if session is None:
@@ -58,6 +59,7 @@ def session_edit(sid):
 
 @app.route('/session/<int:sid>/add_money', methods=["POST"])
 @cross_origin(methods=["POST"])
+@login_required
 def add_money(sid):
     data = request.get_json()
     if "amount" in data.keys():
@@ -70,6 +72,7 @@ def add_money(sid):
         return redirect(url_for("session_edit", sid=sid))
 
 @app.route('/session/<int:sid>/add_user')
+@login_required
 def add_user(sid):
     session = Session[sid]
     users = select(u for u in User if u not in session.users.user and not u.virtual)
@@ -82,6 +85,7 @@ def add_user(sid):
 
 
 @app.route('/session/<int:sid>/add_user/<int:uid>')
+@login_required
 def add_user_(sid, uid):
     session = Session.get(id=sid)
     user = User.get(id=uid)
@@ -94,6 +98,7 @@ def add_user_(sid, uid):
 
 
 @app.route('/session/<int:sid>/delete_user/<int:uid>')
+@login_required
 def delete_user(sid, uid):
     session = Session.get(id=sid)
     user = User.get(id=uid)
