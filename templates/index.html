@@ -13,19 +13,17 @@
             </div>
         </div>
         <br>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="btn-group btn-block" role="group">
+                <div class="dropdown btn-group btn-block">
                     <button id="history" type="button" class="btn btn-secondary btn-lg dropdown-toggle "
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Моя история
                     </button>
-                    <div class="dropdown-menu dropdown-menu" aria-labelledby="history">
-                        <a class="dropdown-item" href="{{ url_for('credit_history') }}">История переводов</a>
-                        <a class="dropdown-item" href="{{ url_for('history') }}">История сессий</a>
+                    <div class="dropdown-menu dropdown-menu-block">
+                        <a class="dropdown-item d-flex justify-content-center" href="{{ url_for('credit_history') }}">История переводов</a>
+                        <a class="dropdown-item d-flex justify-content-center" href="{{ url_for('history') }}">История сессий</a>
                     </div>
                 </div>
-            </div>
-        </div>
+
 	</div>
 {% endblock %}
+
