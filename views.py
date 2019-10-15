@@ -231,19 +231,28 @@ def check_credit():
     for m_credit in masters:
         for s_credit in slaves:
             # поиск строк, где current_user является мастером и слэйвом
-            if m_credit.slave.id == s_credit.master.id:
-                # m > n, соответственно долг cur_user убирается, долг cur_userУ уменьшается на s_credit.value
-                if m_credit.value > s_credit.value:
-                    Credit[s_credit.id].delete()
-                    Credit[m_credit.id].value = m_credit.value - s_credit.value
-                # m < n, соответственно долг cur_userУ убирается, долг cur_user уменьшается на m_credit.value
-                elif m_credit.value < s_credit.value:
-                    Credit[m_credit.id].delete()
-                    Credit[s_credit.id].value = s_credit.value - m_credit.value
-                # m = n, никто никому не должен
-                elif m_credit.value == s_credit.value:
-                    Credit[m_credit.id].delete()
-                    Credit[s_credit.id].delete()
+            if m_credit.value != 0 and s_credit.value != 0:
+                if m_credit.slave.id == s_credit.master.id:
+                    # m > n, соответственно долг cur_user убирается, долг cur_userУ уменьшается на s_credit.value
+                    if m_credit.value > s_credit.value:
+                        CreditEdition(user=m_credit.slave.id, affected_user=m_credit.master.id, credit=s_credit.id,
+                                      old_value=s_credit.value, new_value=0)
+                        Credit[m_credit.id].value = m_credit.value - s_credit.value
+                        Credit[s_credit.id].value = 0
+                    # m < n, соответственно долг cur_userУ убирается, долг cur_user уменьшается на m_credit.value
+                    elif m_credit.value < s_credit.value:
+                        CreditEdition(user=s_credit.slave.id, affected_user=s_credit.master.id, credit=m_credit.id,
+                                      old_value=m_credit.value, new_value=0)
+                        Credit[s_credit.id].value = s_credit.value - m_credit.value
+                        Credit[m_credit.id].value = 0
+                    # m = n, никто никому не должен
+                    elif m_credit.value == s_credit.value:
+                        CreditEdition(user=m_credit.master.id, affected_user=m_credit.slave.id, credit=m_credit.id,
+                                      old_value=m_credit.value, new_value=0)
+                        Credit[m_credit.id].value = 0
+                        CreditEdition(user=s_credit.master.id, affected_user=s_credit.slave.id, credit=s_credit.id,
+                                      old_value=s_credit.value, new_value=0)
+                        Credit[s_credit.id].value = 0
     return render_template('credit.html', user=current_user, masters=masters, slaves=slaves)
 
 
@@ -261,13 +270,12 @@ def edit_credit(uid):
             CreditEdition(user=cur_row.master.id, affected_user=cur_row.slave.id, credit=uid, old_value=val,
                           new_value=result)
         elif result == 0:
-            # Ситуация, когда юзер погашает долг пока не заносится в бд
-            # ибо при погашении долга удаляется соответствующая запись из таблицы Credit
-            # и не получается прокинуть к ней ссылку из CreditEdition
-            # CreditEdition(user=cur_row.master.id, affected_user=cur_row.slave.id, credit=None, old_value=val, new_value=result)
-            cur_row.delete()
+            cur_row.value = 0
+            CreditEdition(user=cur_row.master.id, affected_user=cur_row.slave.id, credit=uid, old_value=val,
+                          new_value=result)
         else:
-            flash('Возвращаемая сумма превышает размер долга. Пожалуйста, скорректируйте данные!', 'error')
+            flash("Возвращаемая сумма превышает размер долга. "
+                  "Пожалуйста, скорректируйте данные!", "error")
             return redirect(url_for('edit_credit', uid=uid))
         return redirect(url_for('check_credit'))
     return render_template('edit_credit.html', user=cur_row, form=form)
