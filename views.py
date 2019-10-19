@@ -154,13 +154,14 @@ def order_new(sid):
     if sess is None:
         return render_template('404.html')
     users = select(uis.user for uis in UserInSession if uis.session == sess)[:]
+    sorted(users, key=lambda u: u.fullname)
     if request.method == 'POST' and form.validate():
-        fullnames = request.form.getlist('users')
+        ids = request.form.getlist('users')
         order = OrderedItem(title=form.data['title'],
                             price=form.data['price'],
                             session=sess)
-        for fullname in fullnames:
-            uis = UserInSession.get(user=User.get(fullname=fullname))
+        for id in ids:
+            uis = UserInSession.get(user=User[id], session=sess)
             order.user_in_sessions.add(uis)
         return redirect(url_for('order_new', sid=sess.id))
     return render_template('order_new.html', form=form, users=users)
