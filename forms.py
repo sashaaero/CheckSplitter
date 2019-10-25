@@ -8,27 +8,27 @@ def nickname_free(form, field):
     nickname = field.data
     check = User.get(nickname=nickname)
     if check is not None:
-        raise ValidationError('Nickname %r is already taken' % nickname)
+        raise ValidationError('Никнейм %r занят' % nickname)
 
 
 def len_check(form, field):
     pwd = field.data
     if len(pwd) < 5:
-        raise ValidationError('Your password is too short, use 5 or more characters')
+        raise ValidationError('Пароль слишком короткий, используйте 5 или более символов')
 
 
 def pwd_check(form, field):
     pwd2 = field.data
     pwd1 = form.pwd1.data
     if pwd1 != pwd2:
-        raise ValidationError('Passwords should match')
+        raise ValidationError('Пароли должны совпадать')
 
 
 def nickname_check(form, field):
     nickname = field.data
     check = User.get(nickname=nickname)
     if check is None:
-        raise ValidationError('User with nickname %r not found' % nickname)
+        raise ValidationError('Пользователь с никнеймом %r не найден' % nickname)
 
 
 def pwd_match_check(form, field):
@@ -37,7 +37,7 @@ def pwd_match_check(form, field):
     user = User.get(nickname=nickname)
     if user:
         if not check_password_hash(user.password, pwd):
-            raise ValidationError('Wrong password. Try again. password')
+            raise ValidationError('Неверный пароль')
 
 
 def check_credit_form(form, field):
@@ -47,19 +47,20 @@ def check_credit_form(form, field):
         raise ValidationError('Введите корректную сумму.')
 
 class RegForm(Form):
-    nickname = StringField('Nickname', [InputRequired(), nickname_free])
-    fullname = StringField('Fullname', [InputRequired()])
-    pwd1 = PasswordField('Password', [InputRequired(), len_check])
-    pwd2 = PasswordField('Password again', [InputRequired(), pwd_check])
+    nickname = StringField('Никнейм', [InputRequired(), nickname_free])
+    fullname = StringField('Полное имя', [InputRequired()])
+    pwd1 = PasswordField('Пароль', [InputRequired(), len_check])
+    pwd2 = PasswordField('Повторите пароль', [InputRequired(), pwd_check])
 
 
 class VirtualRegForm(Form):
-    fullname = StringField('Fullname', [InputRequired()])
+    nickname = StringField('Никнейм', [InputRequired(), nickname_free])
+    fullname = StringField('Полное имя', [InputRequired()])
 
 
 class LoginForm(Form):
-    nickname = StringField('Nickname', [InputRequired(), nickname_check])
-    pwd = PasswordField('Password', [InputRequired(), pwd_match_check])
+    nickname = StringField('Никнейм', [InputRequired(), nickname_check])
+    pwd = PasswordField('Пароль', [InputRequired(), pwd_match_check])
 
 
 class OrderItem(Form):
