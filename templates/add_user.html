@@ -1,7 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Добавление пользователя</h2>
+{% from "formhelpers.html" import render_field %}
+<h3>Добавить гостя</h3>
+<form method="POST">
+    <div class="d-flex justify-content-center">
+        <div class="col-lg-12">
+            {{ render_field(form.nickname) }}
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="col-lg-12">
+            {{ render_field(form.fullname) }}
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <button type="submit" class="btn btn-dark btn-lg">Добавить</button>
+    </div>
+</form>
+
+<h3>Поиск пользователей</h3>
 <div class="input-group mb-3">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">@</span>
