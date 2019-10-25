@@ -25,9 +25,6 @@
                     <td>
                         <h4>Введите сумму, на которую изменился долг:</h4>
                         {{ render_field(form.value) }}
-                        {% if 'value' in form.errors %}
-                            <small class="text-danger">{{ form.errors['value'][0] }}</small>
-                        {% endif %}
                     </td>
                 </tr>
                 <tr>
