@@ -63,6 +63,9 @@ def session_edit(sid):
                            cuser=current_user)
 
 
+def session_end(session):
+    pass
+
 @app.route('/session/<int:sid>/add_money', methods=["POST"])
 @cross_origin(methods=["POST"])
 @login_required
