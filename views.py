@@ -80,51 +80,52 @@ def debt_calc(session):
     masters.sort(key=lambda i: i[0], reverse=True)
     slaves.sort(key=lambda i: i[0], reverse=True)
 
-    log = []
-    s_val, slave = slaves.pop(0)
-    m_val, master = masters.pop(0)
-    while slave:
-        if m_val > s_val:
-            log.append((slave, master, s_val))
-            m_val -= s_val
-            if len(slaves) > 0:
-                s_val, slave = slaves.pop(0)
+    if slaves and masters:
+        log = []
+        s_val, slave = slaves.pop(0)
+        m_val, master = masters.pop(0)
+        while slave:
+            if m_val > s_val:
+                log.append((slave, master, s_val))
+                m_val -= s_val
+                if len(slaves) > 0:
+                    s_val, slave = slaves.pop(0)
+                else:
+                    break
+            elif s_val > m_val:
+                log.append((slave, master, m_val))
+                s_val -= m_val
+                if len(masters) > 0:
+                    m_val, master = masters.pop(0)
+                else:
+                    break
             else:
-                break
-        elif s_val > m_val:
-            log.append((slave, master, m_val))
-            s_val -= m_val
-            if len(masters) > 0:
-                m_val, master = masters.pop(0)
-            else:
-                break
-        else:
-            log.append((slave, master, s_val))
-            if len(slaves) > 0:
-                s_val, slave = slaves.pop(0)
-            else:
-                break
-            if len(masters) > 0:
-                m_val, master = masters.pop(0)
-            else:
-                break
+                log.append((slave, master, s_val))
+                if len(slaves) > 0:
+                    s_val, slave = slaves.pop(0)
+                else:
+                    break
+                if len(masters) > 0:
+                    m_val, master = masters.pop(0)
+                else:
+                    break
 
-    assert not masters
-    assert not slaves
+        assert not masters
+        assert not slaves
 
 
-    for debt in log:
-        m = User[debt[1]]
-        s = User[debt[0]]
-        c = Credit.get(master=m, slave=s)
-        if c is not None:
-            c.value += debt[2]
-        else:
-            Credit(
-                master=m,
-                slave=s,
-                value=debt[2]
-            )
+        for debt in log:
+            m = User[debt[1]]
+            s = User[debt[0]]
+            c = Credit.get(master=m, slave=s)
+            if c is not None:
+                c.value += debt[2]
+            else:
+                Credit(
+                    master=m,
+                    slave=s,
+                    value=debt[2]
+                )
 
 
 @app.route('/session/<int:sid>/', methods=["POST", "GET"])
@@ -145,7 +146,7 @@ def session_edit(sid):
         users_in_order = []
 
     if request.method == "POST" and "end_session" in request.form:
-        session.end = datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
+        session.end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         debt_calc(session)
         return redirect(url_for("index"))
 
