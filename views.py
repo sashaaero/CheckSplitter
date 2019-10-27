@@ -109,10 +109,9 @@ def debt_calc(session):
                     m_val, master = masters.pop(0)
                 else:
                     break
-
+        # TODO Checkout different variants of ending a session
         assert not masters
         assert not slaves
-
 
         for debt in log:
             m = User[debt[1]]
@@ -146,6 +145,7 @@ def session_edit(sid):
         users_in_order = []
 
     if request.method == "POST" and "end_session" in request.form:
+        #TODO conditions when impossible to end the session
         session.end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         debt_calc(session)
         return redirect(url_for("index"))
@@ -156,7 +156,6 @@ def session_edit(sid):
 
     return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users,
                            cuser=current_user)
-
 
 @app.route('/session/<int:sid>/add_money', methods=["POST"])
 @cross_origin(methods=["POST"])
