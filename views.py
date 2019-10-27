@@ -1,7 +1,7 @@
 from app import app
 from flask_login import login_user, current_user, logout_user, login_required
 from models import *
-from forms import RegForm, LoginForm, OrderItem, CreditForm
+from forms import RegForm, LoginForm, OrderItem, CreditForm, VirtualRegForm
 from pony.orm import select, commit, flush, desc, sql_debug
 from flask import render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash
@@ -71,9 +71,10 @@ def add_money(sid):
     else:
         return redirect(url_for("session_edit", sid=sid))
 
-@app.route('/session/<int:sid>/add_user')
+@app.route('/session/<int:sid>/add_user', methods=['POST', 'GET'])
 @login_required
 def add_user(sid):
+    form = VirtualRegForm(request.form)
     session = Session[sid]
     users = select(u for u in User if u not in session.users.user and not u.virtual)
     users_list = []
@@ -81,7 +82,13 @@ def add_user(sid):
         users_list.append({
             'id': u.id, 'fullname': u.fullname, 'login': u.nickname
         })
-    return render_template('add_user.html', cuser=current_user, users=users_list, session=session)
+    if request.method == 'POST' and form.validate():
+        virtual_user = User(nickname=form.nickname.data,
+                             fullname=form.fullname.data,
+                             password='None')
+        commit()
+        return redirect(url_for('add_user_', sid=session.id, uid=virtual_user.id))
+    return render_template('add_user.html', cuser=current_user, users=users_list, session=session, form=form)
 
 
 @app.route('/session/<int:sid>/add_user/<int:uid>')
@@ -91,7 +98,7 @@ def add_user_(sid, uid):
     user = User.get(id=uid)
     if user is None or session is None:
         return render_template('404.html')
-    check = UserInSession(session=session, user=user)
+    check = UserInSession.get(session=session, user=user)
     if check is None:  # TODO add error to logs
         UserInSession(session=session, user=user)
     return redirect(url_for('add_user', sid=sid))

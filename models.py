@@ -19,7 +19,7 @@ class User(db.Entity, UserMixin):
 
     @property
     def virtual(self):
-        return self.password is None
+        return self.password is 'None'
 
     def is_authenticated(self):
         return True
