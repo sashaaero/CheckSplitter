@@ -4,8 +4,31 @@
     <div class="row">
         <div class="col-md-6">
             <h3>Редактирование сессии:</h3>
+            <h3 class="text-truncate">{{ session.title }}:</h3>
             <p></p>
-            <button type="submit" id="end_session" class="btn btn-dark btn-block d-flex justify-content-center">Завершить сессию</button>
+            <div class="dropdown">
+                <button type="button" class="btn btn-secondary btn-dark btn-block
+                dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-haspopup="true"
+                        aria-expanded="false">
+                    Изменить название сессии
+                </button>
+                <form method="POST" class="dropdown-menu p-4 col-lg-12" aria-labelledby="dropdownMenuButton">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group">
+                        <label for="exampleDropdownFormEmail2">Название сессии:</label>
+                        <input type="text" class="form-control" id="session_title" name="session_title"
+                               value="{{ session.title }}" onchange="session_name_button()">
+                        <p></p>
+                        <button type="submit" name="change_session_title" id="change_session_title" disabled
+                                class="btn btn-dark btn-block">Изменить</button>
+                    </div>
+                </form>
+            </div>
+            <p></p>
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" name="end_session" class="btn btn-dark btn-block d-flex justify-content-center">Завершить сессию</button>
+            </form>
             <p></p>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
@@ -106,6 +129,12 @@
                amount: sum,
            }, config)
            document.getElementById("save_button" + uid).setAttribute("disabled", "disabled");
+       }
+       function session_name_button() {
+           let button = document.getElementById("change_session_title");
+           if (button.hasAttribute("disabled")) {
+               button.removeAttribute("disabled")
+           }
        }
     </script>
 

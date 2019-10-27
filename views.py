@@ -29,12 +29,13 @@ def session_new():
     curr_session = current_user.current_session
     if curr_session is None:
         curr_session = Session()
+        curr_session.start = datetime.now()
         UserInSession(user=current_user, session=curr_session)
         commit()
     return redirect(url_for('session_edit', sid=curr_session.id))
 
 
-@app.route('/session/<int:sid>/')
+@app.route('/session/<int:sid>/', methods=["POST", "GET"])
 @login_required
 def session_edit(sid):
     session = Session.get(id=sid)
@@ -51,8 +52,13 @@ def session_edit(sid):
         orders_with_users.append((order, users_in_order))
         users_in_order = []
 
-    if request.method == "POST" and "end_session" in request:
+    if request.method == "POST" and "end_session" in request.form:
+        session.end = datetime.now()
         pass
+    if request.method == "POST" and "change_session_title" in request.form:
+        session.title = request.form["session_title"]
+        return redirect(url_for("session_edit", sid=sid))
+
     return render_template('session_edit.html', title=title, session=session, users=users, orders=orders_with_users,
                            cuser=current_user)
 
