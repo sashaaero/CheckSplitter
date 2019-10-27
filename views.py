@@ -7,6 +7,8 @@ from flask import render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash
 from flask_cors import cross_origin
 from datetime import datetime
+from collections import defaultdict
+from math import isclose
 
 
 @app.errorhandler(404)
@@ -35,6 +37,96 @@ def session_new():
     return redirect(url_for('session_edit', sid=curr_session.id))
 
 
+def debt_calc(session):
+    users_dict = {}
+    values = defaultdict(int)
+    orders = []
+    maintainers = {}
+    for uis in session.users:
+        users_dict.update({uis.user.nickname: uis.user.id})
+        maintainers.update({uis.user.nickname: uis.value})
+
+    for order in session.orders:
+        buyers = ""
+        for uis in order.user_in_sessions:
+            buyers += uis.user.nickname + ' '
+        orders.append((order.title, order.price, buyers))
+
+    for title, price, users in orders:
+        count = len(users.split())
+        for user in users.split():
+            name = users_dict[user]
+            values[name] += (price / count)
+
+    #test
+    should_be = sum(o[1] for o in orders)
+    counted = sum(val for val in values.values())
+    maintaied = sum(v for k, v in maintainers.items())
+    assert isclose(should_be, counted), (should_be, counted)
+    assert should_be <= maintaied
+
+    slaves = []
+    masters = []
+
+    for k, v in maintainers.items():
+        name = users_dict[k]
+        ordered = values[name]
+        val = int(v - ordered)
+        if val < 0:
+            slaves.append((-val, name))
+        else:
+            masters.append((val, name))
+
+    masters.sort(key=lambda i: i[0], reverse=True)
+    slaves.sort(key=lambda i: i[0], reverse=True)
+
+    log = []
+    s_val, slave = slaves.pop(0)
+    m_val, master = masters.pop(0)
+    while slave:
+        if m_val > s_val:
+            log.append((slave, master, s_val))
+            m_val -= s_val
+            if len(slaves) > 0:
+                s_val, slave = slaves.pop(0)
+            else:
+                break
+        elif s_val > m_val:
+            log.append((slave, master, m_val))
+            s_val -= m_val
+            if len(masters) > 0:
+                m_val, master = masters.pop(0)
+            else:
+                break
+        else:
+            log.append((slave, master, s_val))
+            if len(slaves) > 0:
+                s_val, slave = slaves.pop(0)
+            else:
+                break
+            if len(masters) > 0:
+                m_val, master = masters.pop(0)
+            else:
+                break
+
+    assert not masters
+    assert not slaves
+
+
+    for debt in log:
+        m = User[debt[1]]
+        s = User[debt[0]]
+        c = Credit.get(master=m, slave=s)
+        if c is not None:
+            c.value += debt[2]
+        else:
+            Credit(
+                master=m,
+                slave=s,
+                value=debt[2]
+            )
+
+
 @app.route('/session/<int:sid>/', methods=["POST", "GET"])
 @login_required
 def session_edit(sid):
@@ -53,8 +145,10 @@ def session_edit(sid):
         users_in_order = []
 
     if request.method == "POST" and "end_session" in request.form:
-        session.end = datetime.now()
-        pass
+        session.end = datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
+        debt_calc(session)
+        return redirect(url_for("index"))
+
     if request.method == "POST" and "change_session_title" in request.form:
         session.title = request.form["session_title"]
         return redirect(url_for("session_edit", sid=sid))
