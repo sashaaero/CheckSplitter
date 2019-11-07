@@ -321,7 +321,7 @@ def order_edit(sid, oid):
 @login_required
 def history():
     user = current_user
-    user_history = select(s for s in db.Session if s.users == user)
+    user_history = select(s for s in db.Session if user in (u.user for u in s.users))
     return render_template('history.html', user_history=user_history, user=user)
 
 
