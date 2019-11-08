@@ -135,7 +135,6 @@ def session_edit(sid):
                 name = users_dict[user]
                 values[name] += (price / count)
 
-        # test
         should_be = sum(o[1] for o in orders)
         maintained = sum(v for k, v in maintainers.items())
         if should_be <= maintained:
@@ -143,7 +142,8 @@ def session_edit(sid):
             session.end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             debt_calc(session, maintainers, users_dict, values)
             return redirect(url_for("index"))
-
+        else:
+            flash("Не хватает денег для оплаты счёта!", "error")
 
     if request.method == "POST" and "change_session_title" in request.form:
         session.title = request.form["session_title"]
