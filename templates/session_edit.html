@@ -98,6 +98,7 @@
                                         {% endfor %}
                                     </div>
                                 </div>
+                                <a>Цена: {{ order[0].price }}</a>
                             </li>
                           {% endfor %}
                           <a href="{{ url_for('order_new', sid=session.id) }}" type="button" class="list-group-item list-group-item-action list-group-item-dark d-flex justify-content-center">

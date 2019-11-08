@@ -37,34 +37,7 @@ def session_new():
     return redirect(url_for('session_edit', sid=curr_session.id))
 
 
-def debt_calc(session):
-    users_dict = {}
-    values = defaultdict(int)
-    orders = []
-    maintainers = {}
-    for uis in session.users:
-        users_dict.update({uis.user.nickname: uis.user.id})
-        maintainers.update({uis.user.nickname: uis.value})
-
-    for order in session.orders:
-        buyers = ""
-        for uis in order.user_in_sessions:
-            buyers += uis.user.nickname + ' '
-        orders.append((order.title, order.price, buyers))
-
-    for title, price, users in orders:
-        count = len(users.split())
-        for user in users.split():
-            name = users_dict[user]
-            values[name] += (price / count)
-
-    #test
-    should_be = sum(o[1] for o in orders)
-    counted = sum(val for val in values.values())
-    maintaied = sum(v for k, v in maintainers.items())
-    assert isclose(should_be, counted), (should_be, counted)
-    assert should_be <= maintaied
-
+def debt_calc(session, maintainers, users_dict, values):
     slaves = []
     masters = []
 
@@ -110,9 +83,6 @@ def debt_calc(session):
                 else:
                     break
         # TODO Checkout different variants of ending a session
-        assert not masters
-        assert not slaves
-
         for debt in log:
             m = User[debt[1]]
             s = User[debt[0]]
@@ -145,10 +115,35 @@ def session_edit(sid):
         users_in_order = []
 
     if request.method == "POST" and "end_session" in request.form:
+        users_dict = {}
+        values = defaultdict(int)
+        orders = []
+        maintainers = {}
+        for uis in session.users:
+            users_dict.update({uis.user.nickname: uis.user.id})
+            maintainers.update({uis.user.nickname: uis.value})
+
+        for order in session.orders:
+            buyers = ""
+            for uis in order.user_in_sessions:
+                buyers += uis.user.nickname + ' '
+            orders.append((order.title, order.price, buyers))
+
+        for title, price, users_ordered in orders:
+            count = len(users_ordered.split())
+            for user in users_ordered.split():
+                name = users_dict[user]
+                values[name] += (price / count)
+
+        # test
+        should_be = sum(o[1] for o in orders)
+        maintained = sum(v for k, v in maintainers.items())
+        if should_be <= maintained:
         #TODO conditions when impossible to end the session
-        session.end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        debt_calc(session)
-        return redirect(url_for("index"))
+            session.end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            debt_calc(session, maintainers, users_dict, values)
+            return redirect(url_for("index"))
+
 
     if request.method == "POST" and "change_session_title" in request.form:
         session.title = request.form["session_title"]
