@@ -1,11 +1,97 @@
 {% extends 'base.html' %}
 
-{% block contents %}
+{% block content %}
 <ul class="list-group list-group-flush">
-    {% for history in user_history %}
+    {% if user_history %}
+        <div id="accordion">
+            {% for s in user_history %}
+                <div class="card-header" id={{ s.id }}>
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{ s.id }}" aria-expanded="true" aria-controls="collapse-{{ s.id }}">
+                            <h3>{{ s.title }}</h3>
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="collapse-{{ s.id }}" class="collapse" aria-labelledby={{ s.id }} data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="row d-flex align-items-center">
+                            <div class="col-6"><h4>Начало</h4></div>
+                            <div class="col-6">{{ s.start }}</div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-6"><h4>Конец</h4></div>
+                            <div class="col-6">{{ s.end }}</div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-6">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary btn-dark dropdown-toggle" data-toggle="dropdown">
+                                       Пользователи
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        {% for user in s.users%}
+                                            <span class="dropdown-item-text">{{ user.user.nickname }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary btn-dark dropdown-toggle" data-toggle="dropdown">
+                                       Блюда
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        {% for order in s.orders %}
+                                            <span class="dropdown-item-text">{{ order.title }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
         <li class="list-group-item">
-            {{ Session.history}}</li>
-    {% endfor %}
+            <h4>История пуста, пора её заполнить!</h4>
+        </li>
+    {% endif %}
+
 </ul>
 
 {% endblock %}
+
+{#<li class="list-group-item">#}
+{#    <div class="row d-flex align-items-center">#}
+{#        <div class="col-9 text-truncate">{{ s.title }}</div>#}
+{#        <div class="col-3">{{ s.start }}</div>#}
+{#        <div class="col-3">{{ s.end }}</div>#}
+{#        <div class="col-3">#}
+{#            <div class="btn-group">#}
+{#                <button type="button" class="btn btn-primary btn-dark dropdown-toggle" data-toggle="dropdown">#}
+{#                   Пользователи#}
+{#                </button>#}
+{#                <div class="dropdown-menu">#}
+{#                    {% for user in s.users%}#}
+{#                        <span class="dropdown-item-text">{{ user.user.nickname }}</span>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-3">#}
+{#            <div class="btn-group">#}
+{#                <button type="button" class="btn btn-primary btn-dark dropdown-toggle" data-toggle="dropdown">#}
+{#                   Блюда#}
+{#                </button>#}
+{#                <div class="dropdown-menu">#}
+{#                    {% for order in s.orders %}#}
+{#                        <span class="dropdown-item-text">{{ order.title }}</span>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</li>#}

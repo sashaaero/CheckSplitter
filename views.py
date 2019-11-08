@@ -9,6 +9,7 @@ from flask_cors import cross_origin
 from datetime import datetime
 from collections import defaultdict
 from math import isclose
+import time
 
 
 @app.errorhandler(404)
@@ -315,9 +316,11 @@ def order_edit(sid, oid):
 @app.route('/history', methods=['POST', 'GET'])
 @login_required
 def history():
-    user = current_user
-    user_history = select(s for s in db.Session if user in (u.user for u in s.users))
-    return render_template('history.html', user_history=user_history, user=user)
+    user_history = current_user.sessions.session
+    for s in user_history:
+        s.start = datetime.fromtimestamp(int(s.start) / 1000).strftime('%A, %B %d, %Y %I:%M:%S')
+        s.end = datetime.fromtimestamp(int(s.end) / 1000).strftime('%A, %B %d, %Y %I:%M:%S')
+    return render_template('history.html', user_history=user_history)
 
 
 @app.route('/credit')
